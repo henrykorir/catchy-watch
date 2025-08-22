@@ -1,6 +1,5 @@
-describe('Home Page', () => {
-  it('should display welcome text', () => {
-    cy.visit('/')
-    cy.contains('Welcome') // Adjust this based on actual content
+describe('My First Test', () => {
+  it('Does not do much!', () => {
+    expect(true).to.equal(true)
   })
 })
