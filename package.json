@@ -8,14 +8,17 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "cypress:run": "cypress run --component",
-    "lint": "eslint . --ext .js,.ts,.vue",
+    "lint": "eslint . --ext .js,.ts,.tsx,.vue",
     "format": "prettier --write ."
   },
   "dependencies": {
     "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
     "@tailwindcss/vite": "^4.1.12",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "cypress": "^15.0.0",
     "eslint": "^9.33.0",
@@ -27,6 +30,7 @@
     "tailwindcss": "^4.1.12",
     "typescript": "^5.7.2",
     "vite": "^6.0.3",
+    "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^2.1.10"
   }
 }
