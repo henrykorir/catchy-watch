@@ -19,9 +19,6 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Update npm to latest
-        run: npm install -g npm@latest
-
       - name: Install dependencies
         run: pnpm install
 
