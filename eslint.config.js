@@ -1,84 +1,55 @@
+// eslint.config.js
 import { defineConfig } from 'eslint/config'
-import js from '@eslint/js'
-
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-
 import vuePlugin from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
+import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js'
 
 export default defineConfig([
-  // Ignore common folders globally
+  // ✅ Global ignore: built output, config files, etc.
   {
-    ignores: ['node_modules/**', 'dist/**', 'build/**'],
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      'vite.config.ts',
+      'cypress.config.ts',
+    ],
   },
 
-  // Ignore cypress.config.ts and vite.config.ts from general TS config
+  // ✅ Main files: .ts, .tsx, .vue (with type-aware linting)
   {
-    ignores: ['cypress.config.ts', 'vite.config.ts'],
-  },
-
-  // JavaScript files
-  {
-    files: ['**/*.js'],
-    ...js.configs.recommended,
-  },
-
-  // TypeScript files WITH project (type-aware linting)
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        project: './tsconfig.json',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    },
-  },
-
-  // Special TS files WITHOUT project (no type-aware linting)
-  {
-    files: ['cypress.config.ts', 'vite.config.ts'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    },
-  },
-
-  // Vue files
-  {
-    files: ['**/*.vue'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.vue'],
     languageOptions: {
       parser: vueParser,
       parserOptions: {
         parser: tsParser,
+        project: './tsconfig.eslint.json',
+        tsconfigRootDir: new URL('.', import.meta.url).pathname,
+        extraFileExtensions: ['.vue'],
         ecmaVersion: 'latest',
         sourceType: 'module',
-        extraFileExtensions: ['.vue'],
       },
     },
     plugins: {
+      '@typescript-eslint': tsPlugin,
       vue: vuePlugin,
     },
     rules: {
-      ...vuePlugin.configs.recommended.rules,
+      ...vue3Recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'vue/multi-word-component-names': 'off',
     },
+  },
+
+  // ✅ JavaScript files
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    rules: {},
   },
 ])
