@@ -21,7 +21,7 @@ import './commands'
 
 import { mount } from 'cypress/vue'
 // Ensure global styles are loaded
-import '../../src/assets/main.css'
+// import '../../src/assets/main.css'
 
 Cypress.Commands.add('mount', mount)
 
