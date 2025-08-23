@@ -23,13 +23,13 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Run linter
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Run tests
-        run: npm run test
+        run: pnpm run cypress:run
 
       - name: Build app
-        run: npm run build
+        run: pnpm run build
