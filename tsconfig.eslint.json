@@ -2,7 +2,7 @@
     "extends": "./tsconfig.json",
     "include": [
       "src",
-      "cypress",
+      "cypress/**/*.ts",
       "cypress.d.ts",
       "**/*.vue"
     ]
