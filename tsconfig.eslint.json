@@ -5,7 +5,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "cypress.d.ts",
-    "cypress/**/*.ts",         // ✅ add this
-    "cypress/**/*.tsx"         // ✅ if needed
+    "cypress/**/*.ts",
+    "cypress/**/*.tsx",
+    "env.d.ts"
   ]
 }
