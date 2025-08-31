@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@fortawesome/fontawesome-free':
+    specifier: ^7.0.0
+    version: 7.0.0
   vue:
     specifier: ^3.5.13
     version: 3.5.20(typescript@5.9.2)
@@ -431,6 +434,11 @@ packages:
       '@eslint/core': 0.15.2
       levn: 0.4.1
     dev: true
+
+  /@fortawesome/fontawesome-free@7.0.0:
+    resolution: {integrity: sha512-X48nISrSOa89zu2VMljC4XaRf8NmgTwQBVHfS2Nu5G00ZwM31oOVrAtGxZF3b6wDYf9lJsf/Eq4cCSFKIkOWPQ==}
+    engines: {node: '>=6'}
+    dev: false
 
   /@humanfs/core@0.19.1:
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
