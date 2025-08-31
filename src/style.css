@@ -1,79 +1,114 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-.btn, button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-.btn:hover, button:hover {
-  border-color: #646cff;
-}
-.btn:focus, button:focus,
-.btn:focus-visible, button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.card {
-  padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* 1. Hard Reset */
+@layer base {
+  * {
+    @apply m-0 p-0 border-0 box-border;
   }
+
+  html, body {
+    @apply h-full w-full font-sans leading-relaxed antialiased;
+  }
+
+  a {
+    @apply no-underline font-medium text-indigo-500;
+    /* color: inherit; */
+  }
+
   a:hover {
-    color: #747bff;
+    @apply text-indigo-400;
   }
+
+  button, input, select, textarea {
+    /* font: inherit;
+    color: inherit; */
+    @apply bg-transparent outline-none;
+  }
+
+  ul, ol {
+    @apply list-none;
+  }
+
+  img, video, canvas, svg {
+    @apply max-w-full h-auto;
+  }
+
+  table {
+    @apply border-collapse border-spacing-0;
+  }
+}
+
+/* 2. Base Layout Defaults */
+@layer base {
+   :root {
+            --primary: #e50914;
+            --dark: #141414;
+            --light: #f5f5f5;
+            --gray: #808080;
+            --card-bg: rgba(20, 20, 20, 0.8);
+        }
+  body {
+    @apply min-h-screen bg-neutral-900 text-[rgba(255,255,255,0.87)] flex flex-col items-start justify-start;
+     /* background-color: var(--dark); */
+            color: var(--light);
+            /* background: url('https://image.tmdb.org/t/p/original/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg') no-repeat center center fixed; */
+            background-size: cover;
+            position: relative;
+        
+  }
+ body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* background: rgba(0, 0, 0, 0.85); */
+            z-index: -1;
+        }
+  h1 {
+    @apply text-[3.2em] leading-tight;
+  }
+}
+
+/* 3. Reusable Components */
+@layer components {
   .btn, button {
-    background-color: #f9f9f9;
+    @apply rounded-lg border border-transparent px-4 py-2 text-base font-medium 
+           bg-neutral-900 text-white cursor-pointer transition-colors;
+  }
+
+  .btn:hover, button:hover {
+    @apply border-indigo-500;
+  }
+
+  .btn:focus, button:focus,
+  .btn:focus-visible, button:focus-visible {
+    @apply outline outline-4 outline-indigo-500;
+  }
+
+  .card {
+    @apply p-8 bg-neutral-800 rounded-xl shadow-md;
+  }
+
+  #app {
+    @apply w-full max-w-screen-xl mx-auto p-8 ;
+  }
+}
+
+/* 4. Light Mode Overrides */
+@layer utilities {
+  @media (prefers-color-scheme: light) {
+    body {
+      @apply bg-white text-neutral-800;
+    }
+
+    a:hover {
+      @apply text-indigo-600;
+    }
+
+    .btn, button {
+      @apply bg-neutral-100 text-neutral-800;
+    }
   }
 }
