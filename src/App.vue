@@ -1,44 +1,87 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import OnBoardingView from './components/OnBoardingView.vue'
-import HomeView from './components/HomeView.vue'
 import RecommendationView from './components/RecommendationView.vue'
 import AccountView from './components/AccountView.vue'
 import NotFound from './components/NotFound.vue'
 import MovieDetailsView from './components/MovieDetailsView.vue'
+import Header from './components/common/Header.vue'
+import BottomNavigation from './components/common/BottomNavigation.vue'
 
-// Static routes
+/* ---------------- NAVIGATION ---------------- */
+interface NavItem {
+  name: string
+  icon: string
+  label: string
+  link: string
+}
+
+const activeNav = ref('discover')
+
+function setActiveNav(nav: string) {
+  activeNav.value = nav
+}
+
+const navigation = ref<NavItem[]>([
+  { name: 'home', icon: 'fas fa-home', label: 'Home', link: '#/' },
+  { name: 'discover', icon: 'fas fa-compass', label: 'Discover', link: '#/recommendation' },
+  { name: 'saved', icon: 'fas fa-heart', label: 'Saved', link: '#/account' },
+  { name: 'profile', icon: 'fas fa-user', label: 'Profile', link: '#/account' },
+])
+
+/* ---------------- ROUTING ---------------- */
 const routes: Record<string, any> = {
   '/': OnBoardingView,
-  '/home': HomeView,
   '/recommendation': RecommendationView,
   '/account': AccountView,
 }
 
 const currentPath = ref<string>(window.location.hash.slice(1) || '/')
 
-window.addEventListener('hashchange', () => {
+function updatePath() {
   currentPath.value = window.location.hash.slice(1) || '/'
+  window.scrollTo({ top: 0, behavior: 'smooth' }) // scroll to top on route change
+}
+
+onMounted(() => {
+  window.addEventListener('hashchange', updatePath)
 })
 
-// Match route (supports dynamic `/movie/:id`)
-const currentView = computed(() => {
-  // Dynamic route check
-  if (currentPath.value.startsWith('/movie/')) {
-    const id = currentPath.value.split('/')[2]
+onBeforeUnmount(() => {
+  window.removeEventListener('hashchange', updatePath)
+})
+
+function resolveRoute(path: string) {
+  // Dynamic route check: /movie/:id
+  if (path.startsWith('/movie/')) {
+    const id = path.split('/')[2]
     return { component: MovieDetailsView, props: { id } }
   }
 
   // Static route
-  if (routes[currentPath.value]) {
-    return { component: routes[currentPath.value], props: {} }
+  if (routes[path]) {
+    return { component: routes[path], props: {} }
   }
 
   // Fallback
   return { component: NotFound, props: {} }
-})
+}
+
+const currentView = computed(() => resolveRoute(currentPath.value))
 </script>
 
 <template>
-  <component :is="currentView.component" v-bind="currentView.props" />
+  <div>
+    <!-- Show header + bottom navigation only when not onboarding -->
+    <Header v-if="currentPath !== '/'" />
+
+    <component :is="currentView.component" v-bind="currentView.props" />
+
+    <BottomNavigation
+      v-if="currentPath !== '/'"
+      :navigation="navigation"
+      :active-nav="activeNav"
+      @nav-change="setActiveNav"
+    />
+  </div>
 </template>

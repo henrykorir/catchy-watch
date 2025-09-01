@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CastMember from './CastMember.vue'
 /**
  * Cast member interface for props typing
  */
@@ -6,7 +7,7 @@ interface CastMember {
   id: number | string
   name: string
   character: string
-  profilePath: string
+  image: string
 }
 
 /**
@@ -19,16 +20,10 @@ const props = defineProps<{
 
 <template>
   <div class="cast-section">
-    <h2 class="section-title">
-      <i class="fas fa-users"></i> Cast
-    </h2>
+    <h2 class="section-title"><i class="fas fa-users"></i> Cast</h2>
 
     <div class="cast-scroll">
-      <CastMember 
-        v-for="actor in props.cast" 
-        :key="actor.id" 
-        :actor="actor"
-      />
+      <CastMember v-for="actor in props.cast" :key="actor.id" :actor="actor" />
     </div>
   </div>
 </template>

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue"
+import { ref, reactive } from 'vue'
 
-import MoviePoster from './MovieDetails/MoviePoster.vue'
-import MovieInfo from './MovieDetails/MovieInfo.vue'
-import CastSection from './MovieDetails/CastSection.vue'
-import SimilarMovies from './MovieDetails/SimilarMovies.vue'
+import MoviePoster from './movie/MoviePoster.vue'
+import MovieInfo from './movie/MovieInfo.vue'
+import CastSection from './movie/CastSection.vue'
+import SimilarMovies from './movie/SimilarMovies.vue'
+
 // Interfaces
 interface Movie {
   id: number
@@ -36,76 +37,67 @@ interface SimilarMovie {
 // Movie data
 const movie = reactive<Movie>({
   id: 1,
-  title: "Inception",
+  title: 'Inception',
   year: 2010,
   rating: 8.8,
   runtime: 148,
-  releaseDate: "July 16, 2010",
-  genres: ["Sci-Fi", "Action"],
-  tags: ["PG-13", "Mind-bending", "Heist", "Dreams"],
+  releaseDate: 'July 16, 2010',
+  genres: ['Sci-Fi', 'Action'],
+  tags: ['PG-13', 'Mind-bending', 'Heist', 'Dreams'],
   description:
     "Dom Cobb is a skilled thief, the absolute best in the dangerous art of extraction: stealing valuable secrets from deep within the subconscious during the dream state. Cobb's rare ability has made him a coveted player in this treacherous new world of corporate espionage, but it has also made him an international fugitive and cost him everything he has ever loved. Now Cobb is being offered a chance at redemption. One last job could give him his life back but only if he can accomplish the impossible—inception.",
-  poster:
-    "https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg",
+  poster: 'https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg',
 })
 
 // Cast data
 const cast = ref<CastMember[]>([
   {
     id: 1,
-    name: "Leonardo DiCaprio",
-    character: "Cobb",
-    image:
-      "https://image.tmdb.org/t/p/w200/edBk0bw7YPDwlvgqkRkNPKCxry.jpg",
+    name: 'Leonardo DiCaprio',
+    character: 'Cobb',
+    image: 'https://image.tmdb.org/t/p/w200/edBk0bw7YPDwlvgqkRkNPKCxry.jpg',
   },
   {
     id: 2,
-    name: "Joseph Gordon-Levitt",
-    character: "Arthur",
-    image:
-      "https://image.tmdb.org/t/p/w200/3vlnm0SOa8ybCLzAoEUa3a5RzLt.jpg",
+    name: 'Joseph Gordon-Levitt',
+    character: 'Arthur',
+    image: 'https://image.tmdb.org/t/p/w200/3vlnm0SOa8ybCLzAoEUa3a5RzLt.jpg',
   },
   {
     id: 3,
-    name: "Ellen Page",
-    character: "Ariadne",
-    image:
-      "https://image.tmdb.org/t/p/w200/2qSiBmzNMvQsQPr35b5K4XbPbb5.jpg",
+    name: 'Ellen Page',
+    character: 'Ariadne',
+    image: 'https://image.tmdb.org/t/p/w200/2qSiBmzNMvQsQPr35b5K4XbPbb5.jpg',
   },
   {
     id: 4,
-    name: "Tom Hardy",
-    character: "Eames",
-    image:
-      "https://image.tmdb.org/t/p/w200/zFxx1Kd0LgLvBkQ5WgOJ7sT9hSy.jpg",
+    name: 'Tom Hardy',
+    character: 'Eames',
+    image: 'https://image.tmdb.org/t/p/w200/zFxx1Kd0LgLvBkQ5WgOJ7sT9hSy.jpg',
   },
   {
     id: 5,
-    name: "Ken Watanabe",
-    character: "Saito",
-    image:
-      "https://image.tmdb.org/t/p/w200/hWiANEGMyay9hNRB2W1gH7NpUUO.jpg",
+    name: 'Ken Watanabe',
+    character: 'Saito',
+    image: 'https://image.tmdb.org/t/p/w200/hWiANEGMyay9hNRB2W1gH7NpUUO.jpg',
   },
   {
     id: 6,
-    name: "Cillian Murphy",
-    character: "Robert Fischer",
-    image:
-      "https://image.tmdb.org/t/p/w200/cEJ3y4nhU5xSeQk4O1lVcPRi9j7.jpg",
+    name: 'Cillian Murphy',
+    character: 'Robert Fischer',
+    image: 'https://image.tmdb.org/t/p/w200/cEJ3y4nhU5xSeQk4O1lVcPRi9j7.jpg',
   },
   {
     id: 7,
-    name: "Tom Berenger",
-    character: "Browning",
-    image:
-      "https://image.tmdb.org/t/p/w200/hWXqy00aOfXp6eYpZJqL5pKNSI.jpg",
+    name: 'Tom Berenger',
+    character: 'Browning',
+    image: 'https://image.tmdb.org/t/p/w200/hWXqy00aOfXp6eYpZJqL5pKNSI.jpg',
   },
   {
     id: 8,
-    name: "Dileep Rao",
-    character: "Yusuf",
-    image:
-      "https://image.tmdb.org/t/p/w200/3vlnm0SOa8ybCLzAoEUa3a5RzLt.jpg",
+    name: 'Dileep Rao',
+    character: 'Yusuf',
+    image: 'https://image.tmdb.org/t/p/w200/3vlnm0SOa8ybCLzAoEUa3a5RzLt.jpg',
   },
 ])
 
@@ -113,39 +105,33 @@ const cast = ref<CastMember[]>([
 const similarMovies = ref<SimilarMovie[]>([
   {
     id: 2,
-    title: "Interstellar",
+    title: 'Interstellar',
     year: 2014,
-    poster:
-      "https://image.tmdb.org/t/p/w300/8IB2e4r4oVhHnANbnm7O3Tj6tF8.jpg",
+    poster: 'https://image.tmdb.org/t/p/w300/8IB2e4r4oVhHnANbnm7O3Tj6tF8.jpg',
   },
   {
     id: 3,
-    title: "The Matrix",
+    title: 'The Matrix',
     year: 1999,
-    poster:
-      "https://image.tmdb.org/t/p/w300/7sFErsI9x5cZ0xz0aRqaLqFkHrT.jpg",
+    poster: 'https://image.tmdb.org/t/p/w300/7sFErsI9x5cZ0xz0aRqaLqFkHrT.jpg',
   },
   {
     id: 4,
-    title: "Tenet",
+    title: 'Tenet',
     year: 2020,
-    poster:
-      "https://image.tmdb.org/t/p/w300/aOIuZAjPaRIE6CMzbazvcHuHXDc.jpg",
+    poster: 'https://image.tmdb.org/t/p/w300/aOIuZAjPaRIE6CMzbazvcHuHXDc.jpg',
   },
   {
     id: 5,
-    title: "Shutter Island",
+    title: 'Shutter Island',
     year: 2010,
-    poster:
-      "https://image.tmdb.org/t/p/w300/g6pIozCBNM6dh2lpcSCcEExwQh0.jpg",
+    poster: 'https://image.tmdb.org/t/p/w300/g6pIozCBNM6dh2lpcSCcEExwQh0.jpg',
   },
 ])
 
 // Function to load a different movie (simplified for demo)
 const loadMovie = (movieId: number): void => {
-  alert(
-    `Loading movie with ID: ${movieId} (this would fetch real data in a real app)`
-  )
+  alert(`Loading movie with ID: ${movieId} (this would fetch real data in a real app)`)
 }
 </script>
 
@@ -165,7 +151,6 @@ const loadMovie = (movieId: number): void => {
 </template>
 
 <style scoped>
-/* 🎨 Your existing styles preserved */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -425,7 +410,9 @@ header {
   background: var(--card-bg);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
 }
 
