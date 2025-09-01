@@ -1,82 +1,175 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import MovieCard from './MovieCard.vue'
+import { ref, computed } from 'vue'
+import Header from './common/Header.vue'
+import SearchBar from './common/SearchBar.vue'
+import FilterSection from './recommendation/FilterSection.vue'
+import RecommendationList from './recommendation/RecommendationList.vue'
+import BottomNavigation from './common/BottomNavigation.vue'
 
-const query = ref('')
+// State
+const searchQuery = ref('')
+const activeFilter = ref('All')
+const touchedCard = ref<number | null>(null)
 
-const movies = [
-  // {
-  //   id: 1,
-  //   title: 'Inception',
-  //   thumbnail: 'https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg'
-  // },
+const filters = ref(['All', 'Popular', 'Trending', 'New', 'Top Rated', 'For You', 'Nearby'])
+
+const recommendations = ref([
+  {
+    id: 1,
+    title: 'Italian Restaurant',
+    description: 'Authentic Italian cuisine with a modern twist. Perfect for date night!',
+    rating: 4.8,
+    price: '$$',
+    image:
+      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&h=400&q=80',
+    tags: ['food', 'popular'],
+  },
   {
     id: 2,
-    title: 'Interstellar',
-    thumbnail: 'https://image.tmdb.org/t/p/w500/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg',
+    title: 'Yoga Studio',
+    description: 'Find your inner peace with our beginner-friendly yoga classes.',
+    rating: 4.9,
+    price: '$$',
+    image:
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&h=400&q=80',
+    tags: ['wellness', 'trending'],
   },
   {
     id: 3,
-    title: 'Tenet',
-    thumbnail: 'https://image.tmdb.org/t/p/w500/k68nPLbIST6NP96JmTxmZijEvCA.jpg',
+    title: 'Fitness Center',
+    description: 'State-of-the-art equipment and personalized training programs.',
+    rating: 4.7,
+    price: '$$$',
+    image:
+      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&h=400&q=80',
+    tags: ['fitness', 'popular'],
   },
   {
     id: 4,
-    title: 'The Dark Knight',
-    thumbnail: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+    title: 'Bookstore Cafe',
+    description: 'Curated selection of books with artisanal coffee and pastries.',
+    rating: 4.8,
+    price: '$',
+    image:
+      'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&h=400&q=80',
+    tags: ['cafe', 'new'],
   },
-]
+  {
+    id: 5,
+    title: 'Indie Cinema',
+    description: 'Independent films and documentaries with comfortable seating.',
+    rating: 4.6,
+    price: '$$',
+    image:
+      'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?auto=format&fit=crop&w=600&h=400&q=80',
+    tags: ['entertainment', 'top rated'],
+  },
+  {
+    id: 6,
+    title: 'Mountain Getaway',
+    description: 'Weekend retreat in the mountains with breathtaking views.',
+    rating: 4.9,
+    price: '$$$$',
+    image:
+      'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=600&h=400&q=80',
+    tags: ['travel', 'for you'],
+  },
+])
+
+// Computed
+const filteredRecommendations = computed(() => {
+  if (activeFilter.value === 'All') {
+    return recommendations.value
+  }
+
+  return recommendations.value.filter((item) =>
+    item.tags.some(
+      (tag) => tag.toLowerCase() === activeFilter.value.toLowerCase().replace(' ', ''),
+    ),
+  )
+})
+
+// Methods
+function setActiveFilter(filter: string) {
+  activeFilter.value = filter
+}
 
 function handleSearch() {
-  console.log('Searching for:', query.value)
+  console.log('Searching for:', searchQuery.value)
+}
+
+function handleTouchStart(index: number) {
+  touchedCard.value = index
+}
+
+function handleTouchEnd(index: number) {
+  if (touchedCard.value === index) {
+    touchedCard.value = null
+  }
 }
 </script>
 
 <template>
-  <div class="w-full max-w-full mx-auto px-4 py-6">
-    <div class="relative">
-      <!-- Input field -->
-      <input
-        v-model="query"
-        @keyup.enter="handleSearch"
-        type="text"
-        placeholder="Search"
-        class="w-full pl-12 pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:text-white"
+  <div id="app">
+    <!-- <Header /> -->
+    <div class="container">
+      <SearchBar v-model="searchQuery" @search="handleSearch" />
+      <FilterSection
+        :filters="filters"
+        :active-filter="activeFilter"
+        @filter-change="setActiveFilter"
       />
-
-      <!-- Icon + Label inside input -->
-      <div
-        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500"
-      >
-        <!-- Magnifying glass SVG -->
-        <svg
-          class="w-5 h-5 mr-1"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-          />
-        </svg>
-        <!-- <span class="text-sm">Search</span> -->
-      </div>
+      <RecommendationList
+        :recommendations="filteredRecommendations"
+        @touch-start="handleTouchStart"
+        @touch-end="handleTouchEnd"
+      />
     </div>
-    <h2 class="text-center">Recommendations</h2>
-    <div class="px-4 py-6">
-      <div class="grid grid-cols-2 gap-4">
-        <MovieCard
-          v-for="movie in movies"
-          :key="movie.id"
-          :id="movie.id"
-          :title="movie.title"
-          :thumbnail="movie.thumbnail"
-        />
-      </div>
-    </div>
+    <!-- <BottomNavigation :navigation="navigation" :active-nav="activeNav" @nav-change="setActiveNav" /> -->
   </div>
 </template>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+#app {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+.container {
+  max-width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+</style>

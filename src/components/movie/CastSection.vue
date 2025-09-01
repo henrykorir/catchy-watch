@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CastMember from './CastMember.vue'
 /**
  * Cast member interface for props typing
  */
@@ -6,7 +7,7 @@ interface CastMember {
   id: number | string
   name: string
   character: string
-  profilePath: string
+  image: string
 }
 
 /**

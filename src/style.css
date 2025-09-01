@@ -1,100 +1,46 @@
 @import 'tailwindcss';
 
-/* 1. Hard Reset */
-@layer base {
-  * {
-    @apply m-0 p-0 border-0 box-border;
-  }
-
-  html,
-  body {
-    @apply h-full w-full font-sans leading-relaxed antialiased;
-  }
-
-  a {
-    @apply no-underline font-medium text-indigo-500;
-    /* color: inherit; */
-  }
-
-  a:hover {
-    @apply text-indigo-400;
-  }
-
-  button,
-  input,
-  select,
-  textarea {
-    /* font: inherit;
-    color: inherit; */
-    @apply bg-transparent outline-none;
-  }
-
-  ul,
-  ol {
-    @apply list-none;
-  }
-
-  img,
-  video,
-  canvas,
-  svg {
-    @apply max-w-full h-auto;
-  }
-
-  table {
-    @apply border-collapse border-spacing-0;
-  }
-}
-
-/* 2. Base Layout Defaults */
+/* 1. Theme Variables */
 @layer base {
   :root {
     --primary: #e50914;
+    --secondary: #0071eb;
     --dark: #141414;
+    --dark-light: #1f1f1f;
     --light: #f5f5f5;
     --gray: #808080;
     --card-bg: rgba(20, 20, 20, 0.8);
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --line-height: 1.6;
   }
+
   body {
-    @apply min-h-screen bg-neutral-900 text-[rgba(255,255,255,0.87)] flex flex-col items-start justify-start;
-    /* background-color: var(--dark); */
-    color: var(--light);
-    /* background: url('https://image.tmdb.org/t/p/original/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg') no-repeat center center fixed; */
-    background-size: cover;
-    position: relative;
+    @apply min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] font-sans antialiased;
   }
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* background: rgba(0, 0, 0, 0.85); */
-    z-index: -1;
-  }
+
   h1 {
-    @apply text-[3.2em] leading-tight;
+    @apply text-[3.2em] leading-tight font-bold;
+  }
+
+  a {
+    @apply font-medium text-indigo-500 no-underline;
+  }
+  a:hover {
+    @apply text-indigo-400;
   }
 }
 
-/* 3. Reusable Components */
+/* 2. Components */
 @layer components {
-  .btn,
-  button {
+  .btn {
     @apply rounded-lg border border-transparent px-4 py-2 text-base font-medium 
            bg-neutral-900 text-white cursor-pointer transition-colors;
   }
-
-  .btn:hover,
-  button:hover {
+  .btn:hover {
     @apply border-indigo-500;
   }
-
-  .btn:focus,
-  button:focus,
-  .btn:focus-visible,
-  button:focus-visible {
+  .btn:focus-visible {
     @apply outline outline-4 outline-indigo-500;
   }
 
@@ -105,364 +51,165 @@
   #app {
     @apply w-full max-w-screen-xl mx-auto p-8;
   }
-}
 
-/* 4. Light Mode Overrides */
-@layer utilities {
-  @media (prefers-color-scheme: light) {
-    body {
-      @apply bg-white text-neutral-800;
-    }
-
-    a:hover {
-      @apply text-indigo-600;
-    }
-
-    .btn,
-    button {
-      @apply bg-neutral-100 text-neutral-800;
-    }
+  /* Avatar */
+  .avatar-section {
+    @apply flex items-center gap-4;
   }
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-:root {
-  --primary: #e50914;
-  --secondary: #0071eb;
-  --dark: #141414;
-  --dark-light: #1f1f1f;
-  --light: #f5f5f5;
-  --gray: #808080;
-  --card-bg: rgba(20, 20, 20, 0.8);
-}
-
-body {
-  background-color: var(--dark);
-  color: var(--light);
-  min-height: 100vh;
-  padding: 1rem;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Avatar Component Styles */
-.avatar-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--primary);
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.avatar:hover {
-  transform: scale(1.05);
-}
-
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.user-name {
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.user-status {
-  font-size: 0.85rem;
-  color: var(--gray);
-}
-
-/* NavItem Component Styles */
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-item.active {
-  background-color: var(--primary);
-  color: white;
-}
-
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: var(--primary);
-  color: white;
-  font-size: 0.7rem;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* TopNav Component Styles */
-.top-nav {
-  background-color: var(--dark-light);
-  padding: 1rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  gap: 2rem
-}
-
-.nav-items {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-/* MovieCard Component Styles */
-.movie-card {
-  background: var(--card-bg);
-  border-radius: 8px;
-  overflow: hidden;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  cursor: pointer;
-}
-
-.movie-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-}
-
-.movie-poster {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.movie-content {
-  padding: 0.75rem;
-}
-
-.movie-title {
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.movie-year {
-  color: var(--gray);
-  font-size: 0.8rem;
-  margin-bottom: 0.25rem;
-}
-
-.movie-rating {
-  display: flex;
-  align-items: center;
-  color: #ffd700;
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.movie-rating i {
-  margin-right: 0.25rem;
-}
-
-/* WatchlistSection Component Styles */
-.watchlist-section {
-  background-color: var(--dark-light);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.view-all {
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.movies-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
-}
-
-/* SettingsOption Component Styles */
-.settings-option {
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-  cursor: pointer;
-  transition: background 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.settings-option:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.settings-option i {
-  width: 20px;
-  color: var(--primary);
-}
-
-/* SettingsPanel Component Styles */
-.settings-panel {
-  background-color: var(--dark-light);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* NotificationsPanel Component Styles */
-.notifications-panel {
-  background-color: var(--dark-light);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.notification {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-  cursor: pointer;
-  transition: background 0.3s;
-  position: relative;
-}
-
-.notification:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.notification.unread {
-  background-color: rgba(229, 9, 20, 0.1);
-}
-
-.notification-content {
-  flex: 1;
-}
-
-.notification-message {
-  margin-bottom: 0.25rem;
-  line-height: 1.4;
-}
-
-.notification-time {
-  font-size: 0.8rem;
-  color: var(--gray);
-}
-
-.notification-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--primary);
-  margin-left: 0.5rem;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 2rem;
-  color: var(--gray);
-}
-
-.empty-state i {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  display: block;
-}
-
-/* Content Section */
-.content-section {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2rem;
-}
-
-/* Responsive Design */
-@media (max-width: 900px) {
-  .top-nav {
-    flex-direction: column;
-    gap: 1rem;
+  .avatar {
+    @apply w-[50px] h-[50px] rounded-full overflow-hidden border-2 cursor-pointer transition-transform;
+    border-color: var(--primary);
+  }
+  .avatar:hover {
+    @apply scale-105;
+  }
+  .user-info {
+    @apply flex flex-col;
+  }
+  .user-name {
+    @apply font-semibold text-lg;
+  }
+  .user-status {
+    @apply text-sm text-[var(--gray)];
   }
 
-  .nav-items {
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .content-section {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .nav-items {
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-  }
-
+  /* Nav Items */
   .nav-item {
-    width: 100%;
-    justify-content: center;
+    @apply flex items-center gap-2 px-5 py-3 rounded-lg cursor-pointer relative transition-all;
+  }
+  .nav-item:hover {
+    @apply bg-white/10;
+  }
+  .nav-item.active {
+    @apply bg-[var(--primary)] text-white;
+  }
+  .badge {
+    @apply absolute -top-1 -right-1 flex items-center justify-center w-[18px] h-[18px] rounded-full text-xs text-white;
+    background-color: var(--primary);
   }
 
+  /* Top Navigation */
+  .top-nav {
+    @apply bg-[var(--dark-light)] p-4 rounded-xl mb-8 flex justify-between items-center shadow-md gap-8;
+  }
+  .nav-items {
+    @apply flex items-center gap-6;
+  }
+
+  /* Movie Card */
+  .movie-card {
+    @apply bg-[var(--card-bg)] rounded-lg overflow-hidden cursor-pointer transition-transform duration-300;
+  }
+  .movie-card:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+  .movie-poster {
+    @apply w-full h-[200px] object-cover;
+  }
+  .movie-content {
+    @apply p-3;
+  }
+  .movie-title {
+    @apply font-semibold text-sm mb-1 truncate;
+  }
+  .movie-year {
+    @apply text-[var(--gray)] text-xs mb-1;
+  }
+  .movie-rating {
+    @apply flex items-center text-yellow-400 font-semibold text-xs;
+  }
+
+  /* Watchlist Section */
+  .watchlist-section {
+    @apply bg-[var(--dark-light)] rounded-xl p-6 shadow-md;
+  }
+  .section-header {
+    @apply flex justify-between items-center mb-6;
+  }
+  .section-title {
+    @apply text-xl font-semibold;
+  }
+  .view-all {
+    @apply text-[var(--primary)] text-sm cursor-pointer;
+  }
   .movies-grid {
-    grid-template-columns: repeat(2, 1fr);
+    @apply grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))];
+  }
+
+  /* Settings */
+  .settings-option {
+    @apply flex items-center gap-3 p-4 rounded-lg mb-3 cursor-pointer transition-colors;
+  }
+  .settings-option:hover {
+    @apply bg-white/10;
+  }
+  .settings-option i {
+    @apply w-5 text-[var(--primary)];
+  }
+  .settings-panel {
+    @apply bg-[var(--dark-light)] rounded-xl p-6 shadow-md;
+  }
+
+  /* Notifications */
+  .notifications-panel {
+    @apply bg-[var(--dark-light)] rounded-xl p-6 shadow-md;
+  }
+  .notification {
+    @apply flex items-center p-4 rounded-lg mb-3 cursor-pointer transition-colors relative;
+  }
+  .notification:hover {
+    @apply bg-white/10;
+  }
+  .notification.unread {
+    @apply bg-[rgba(229,9,20,0.1)];
+  }
+  .notification-content {
+    @apply flex-1;
+  }
+  .notification-message {
+    @apply mb-1 leading-relaxed;
+  }
+  .notification-time {
+    @apply text-xs text-[var(--gray)];
+  }
+  .notification-indicator {
+    @apply w-2 h-2 rounded-full bg-[var(--primary)] ml-2;
+  }
+  .empty-state {
+    @apply text-center p-8 text-[var(--gray)];
+  }
+  .empty-state i {
+    @apply text-2xl mb-4 block;
+  }
+
+  /* Content Layout */
+  .content-section {
+    @apply grid gap-8 grid-cols-[1fr_300px];
+  }
+}
+
+/* 3. Responsive Utilities */
+@layer utilities {
+  @media (max-width: 900px) {
+    .top-nav {
+      @apply flex-col gap-4;
+    }
+    .nav-items {
+      @apply w-full justify-around;
+    }
+    .content-section {
+      @apply grid-cols-1;
+    }
+  }
+  @media (max-width: 600px) {
+    .nav-items {
+      @apply flex-col gap-2 w-full;
+    }
+    .nav-item {
+      @apply w-full justify-center;
+    }
+    .movies-grid {
+      @apply grid-cols-2;
+    }
   }
 }

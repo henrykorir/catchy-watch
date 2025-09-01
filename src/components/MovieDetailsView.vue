@@ -5,6 +5,7 @@ import MoviePoster from './movie/MoviePoster.vue'
 import MovieInfo from './movie/MovieInfo.vue'
 import CastSection from './movie/CastSection.vue'
 import SimilarMovies from './movie/SimilarMovies.vue'
+
 // Interfaces
 interface Movie {
   id: number
@@ -150,7 +151,6 @@ const loadMovie = (movieId: number): void => {
 </template>
 
 <style scoped>
-/* 🎨 Your existing styles preserved */
 .container {
   max-width: 1200px;
   margin: 0 auto;

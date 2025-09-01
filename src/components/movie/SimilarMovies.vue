@@ -11,7 +11,7 @@ interface Movie {
 }
 
 // Props with typing
-const props = defineProps<{
+defineProps<{
   movies: Movie[]
 }>()
 
@@ -43,7 +43,6 @@ const handleMovieSelection = (movieId: number | string) => {
 </template>
 
 <style scoped>
-/* 🎨 Your existing styles preserved */
 .container {
   max-width: 1200px;
   margin: 0 auto;

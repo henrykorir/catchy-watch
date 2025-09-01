@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Define props with TypeScript
-const props = defineProps<{
+defineProps<{
   avatarUrl: string
   userName: string
   userStatus?: string

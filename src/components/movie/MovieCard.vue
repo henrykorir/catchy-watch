@@ -28,6 +28,7 @@ const emit = defineEmits<{
  */
 const selectMovie = (): void => {
   window.location.hash = `/movie/${props.movie.id}`
+  window.scrollTo({ top: 0, behavior: 'smooth' }) // scroll to top
 }
 </script>
 

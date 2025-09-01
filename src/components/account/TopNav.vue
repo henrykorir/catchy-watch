@@ -66,7 +66,7 @@ const handleNavItemClick = (item: string) => {
 
 <style scoped>
 .top-nav {
-  background-color: #1f1f1f;
+  /* background-color: #1f1f1f; */
   padding: 1rem;
   border-radius: 12px;
   margin-bottom: 2rem;

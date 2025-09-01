@@ -5,11 +5,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: "option-clicked", value: string): void
+  (e: 'option-clicked', value: string): void
 }>()
 
 function handleClick() {
-  emit("option-clicked", props.label)
+  emit('option-clicked', props.label)
 }
 </script>
 
