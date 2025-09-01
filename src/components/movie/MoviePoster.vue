@@ -1,52 +1,20 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import MovieCard from './MovieCard.vue'
-
-// Define the Movie type
-interface Movie {
-  id: number | string
+// Define props type
+interface Props {
+  posterUrl: string
   title: string
-  year?: number
-  rating?: number
-  poster?: string
 }
 
-// Props with typing
-const props = defineProps<{
-  movies: Movie[]
-}>()
-
-// Emit typing
-const emit = defineEmits<{
-  (e: 'movie-changed', movieId: number | string): void
-}>()
-
-// Handler
-const handleMovieSelection = (movieId: number | string) => {
-  alert(`Navigating to movie with ID: ${movieId}`)
-  emit('movie-changed', movieId)
-}
+const props = defineProps<Props>()
 </script>
 
 <template>
-  <div class="similar-section">
-    <h2 class="section-title">
-      <i class="fas fa-film"></i> Similar Movies
-    </h2>
-
-    <div class="similar-movies">
-      <MovieCard
-        v-for="movie in movies"
-        :key="movie.id"
-        :movie="movie"
-        @movie-selected="handleMovieSelection"
-      />
-    </div>
+  <div class="poster-container">
+    <img :src="props.posterUrl" :alt="props.title + ' Poster'" class="poster" />
   </div>
 </template>
 
 <style scoped>
-/* 🎨 Your existing styles preserved */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -306,7 +274,9 @@ header {
   background: var(--card-bg);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
 }
 

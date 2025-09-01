@@ -9,13 +9,7 @@ import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js'
 export default defineConfig([
   // ✅ Global ignore: built output, config files, etc.
   {
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      'vite.config.ts',
-      'cypress.config.ts',
-    ],
+    ignores: ['node_modules/**', 'dist/**', 'build/**', 'vite.config.ts', 'cypress.config.ts'],
   },
 
   // ✅ Main files: .ts, .tsx, .vue (with type-aware linting)

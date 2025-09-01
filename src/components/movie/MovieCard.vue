@@ -27,7 +27,7 @@ const emit = defineEmits<{
  * Methods
  */
 const selectMovie = (): void => {
-  emit('movie-selected', props.movie.id)
+  window.location.hash = `/movie/${props.movie.id}`
 }
 </script>
 
@@ -46,7 +46,9 @@ const selectMovie = (): void => {
   background: var(--card-bg);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
 }
 

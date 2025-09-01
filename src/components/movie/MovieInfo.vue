@@ -56,11 +56,11 @@ const shareMovie = (): void => {
  * Computed values
  */
 const watchlistIcon: ComputedRef<string> = computed(() =>
-  inWatchlist.value ? 'fas fa-check' : 'fas fa-plus'
+  inWatchlist.value ? 'fas fa-check' : 'fas fa-plus',
 )
 
 const watchlistText: ComputedRef<string> = computed(() =>
-  inWatchlist.value ? 'Added to Watchlist' : 'Add to Watchlist'
+  inWatchlist.value ? 'Added to Watchlist' : 'Add to Watchlist',
 )
 </script>
 
@@ -69,15 +69,11 @@ const watchlistText: ComputedRef<string> = computed(() =>
     <h1 class="title">
       {{ props.movie.title }}
       <span class="year">({{ props.movie.year }})</span>
-      <span class="rating">
-        <i class="fas fa-star"></i> {{ props.movie.rating }}
-      </span>
+      <span class="rating"> <i class="fas fa-star"></i> {{ props.movie.rating }} </span>
     </h1>
 
     <div class="details">
-      <div class="detail-item">
-        <i class="far fa-clock"></i> {{ props.movie.runtime }} min
-      </div>
+      <div class="detail-item"><i class="far fa-clock"></i> {{ props.movie.runtime }} min</div>
       <div class="detail-item">
         <i class="far fa-calendar-alt"></i> {{ props.movie.releaseDate }}
       </div>
