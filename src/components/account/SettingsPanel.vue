@@ -9,7 +9,7 @@ interface Option {
 }
 
 // Define props with TypeScript
-const props = defineProps<{
+defineProps<{
   title?: string
   options: Option[]
 }>()

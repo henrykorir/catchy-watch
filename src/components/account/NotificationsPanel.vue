@@ -8,7 +8,7 @@ interface Notification {
 }
 
 // Define props with TypeScript
-const props = defineProps<{
+defineProps<{
   notifications: Notification[]
 }>()
 
@@ -28,9 +28,9 @@ const handleNotificationClick = (notificationId: number) => {
     <h2 class="section-title">Notifications</h2>
 
     <div
-      class="notification"
       v-for="notification in notifications"
       :key="notification.id"
+      class="notification"
       :class="{ unread: !notification.read }"
       @click="handleNotificationClick(notification.id)"
     >
@@ -38,10 +38,10 @@ const handleNotificationClick = (notificationId: number) => {
         <p class="notification-message">{{ notification.message }}</p>
         <span class="notification-time">{{ notification.time }}</span>
       </div>
-      <div class="notification-indicator" v-if="!notification.read"></div>
+      <div v-if="!notification.read" class="notification-indicator"></div>
     </div>
 
-    <div class="empty-state" v-if="notifications.length === 0">
+    <div  v-if="notifications.length === 0" class="empty-state">
       <i class="fas fa-bell-slash"></i>
       <p>No notifications</p>
     </div>

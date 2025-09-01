@@ -30,7 +30,7 @@ const handleClick = () => {
     <div class="movie-content">
       <h3 class="movie-title">{{ movie.title }}</h3>
       <div class="movie-year">{{ movie.year }}</div>
-      <div class="movie-rating" v-if="movie.rating">
+      <div v-if="movie.rating" class="movie-rating">
         <i class="fas fa-star"></i>
         <span>{{ movie.rating }}</span>
       </div>

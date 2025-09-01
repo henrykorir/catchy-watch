@@ -22,7 +22,7 @@ const handleClick = () => {
   <div class="nav-item" :class="{ active: isActive }" @click="handleClick">
     <i :class="icon"></i>
     <span>{{ label }}</span>
-    <div class="badge" v-if="badgeCount">{{ badgeCount }}</div>
+    <div v-if="badgeCount" class="badge">{{ badgeCount }}</div>
   </div>
 </template>
 

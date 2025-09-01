@@ -83,7 +83,7 @@ const watchlistText: ComputedRef<string> = computed(() =>
     </div>
 
     <div class="tags">
-      <span class="tag" v-for="tag in props.movie.tags" :key="tag">
+      <span  v-for="tag in props.movie.tags" :key="tag" class="tag">
         {{ tag }}
       </span>
     </div>

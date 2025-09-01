@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Header from './common/Header.vue'
 import SearchBar from './common/SearchBar.vue'
 import FilterSection from './recommendation/FilterSection.vue'
 import RecommendationList from './recommendation/RecommendationList.vue'
-import BottomNavigation from './common/BottomNavigation.vue'
 
 // State
 const searchQuery = ref('')

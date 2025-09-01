@@ -2,7 +2,7 @@
   <header>
     <div class="container">
       <div class="header-content">
-        <div class="logo">Discover</div>
+        <div class="logo">Catchy Watch</div>
         <div class="user-actions">
           <i class="fas fa-bell"></i>
         </div>

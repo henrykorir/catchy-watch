@@ -11,7 +11,7 @@ interface Movie {
 }
 
 // Define props with TypeScript
-const props = defineProps<{
+defineProps<{
   title?: string
   movies: Movie[]
 }>()
