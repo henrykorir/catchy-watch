@@ -3,8 +3,6 @@ import TopNav from './account/TopNav.vue'
 import WatchlistSection from './account/WatchlistSection.vue'
 import SettingsPanel from './account/SettingsPanel.vue'
 import NotificationsPanel from './account/NotificationsPanel.vue'
-import BottomNavigation from './common/BottomNavigation.vue'
-import Header from './common/Header.vue'
 import { ref } from 'vue'
 
 // Reactive data
@@ -15,17 +13,6 @@ const user = ref({
   name: 'Alex Johnson',
   status: 'Premium Member',
 })
-const activeNav = ref('discover')
-function setActiveNav(nav: string) {
-  activeNav.value = nav
-}
-
-const navigation = ref([
-  { name: 'home', icon: 'fas fa-home', label: 'Home' },
-  { name: 'discover', icon: 'fas fa-compass', label: 'Discover' },
-  { name: 'saved', icon: 'fas fa-heart', label: 'Saved' },
-  { name: 'profile', icon: 'fas fa-user', label: 'Profile' },
-])
 
 const navItems = ref([
   { id: 'watchlist', icon: 'fas fa-clipboard-list', label: 'Watchlist', badgeCount: 0 },
@@ -127,7 +114,6 @@ const handleNotificationClick = (notificationId: number) => {
 </script>
 
 <template>
-  <!-- <Header /> -->
   <div class="container">
     <TopNav
       :user="user"
@@ -156,13 +142,6 @@ const handleNotificationClick = (notificationId: number) => {
         :notifications="notifications"
         @notification-clicked="handleNotificationClick"
       />
-      <!--
-      <BottomNavigation
-        :navigation="navigation"
-        :active-nav="activeNav"
-        @nav-change="setActiveNav"
-      />
-      -->
     </div>
   </div>
 </template>

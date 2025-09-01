@@ -19,7 +19,7 @@ const props = defineProps<{
 /**
  * Emits definition with strong typing
  */
-const emit = defineEmits<{
+defineEmits<{
   (e: 'movie-selected', movieId: Movie['id']): void
 }>()
 

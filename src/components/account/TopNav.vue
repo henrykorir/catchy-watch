@@ -18,7 +18,7 @@ interface NavItem {
 }
 
 // Define props with TypeScript
-const props = defineProps<{
+defineProps<{
   user: User
   navItems: NavItem[]
   activeItem?: string

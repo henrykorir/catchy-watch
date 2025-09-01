@@ -15,7 +15,7 @@
 import { defineProps, defineEmits } from 'vue'
 
 // Props
-const props = defineProps<{
+defineProps<{
   filters: string[]
   activeFilter: string
 }>()
