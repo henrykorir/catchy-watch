@@ -5,7 +5,7 @@ import FilterSection from './recommendation/FilterSection.vue'
 import RecommendationList from './recommendation/RecommendationList.vue'
 import { useApi } from '../composables/useApi'
 import tmdb from '../lib/tmdb-auth'
-import { PopularMovies } from '@tdanks2000/tmdb-wrapper'
+import { MovieDiscoverResult } from '@tdanks2000/tmdb-wrapper'
 import { movieStore } from '../store/movie'
 
 // State
@@ -16,86 +16,11 @@ const touchedCard = ref<number | null>(null)
 
 const filters = ref(['All', 'Popular', 'Trending', 'New', 'Top Rated', 'For You', 'Nearby'])
 
-// const recommendations = ref([
-//   {
-//     id: 1,
-//     title: 'Italian Restaurant',
-//     description: 'Authentic Italian cuisine with a modern twist. Perfect for date night!',
-//     rating: 4.8,
-//     price: '$$',
-//     image:
-//       'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&h=400&q=80',
-//     tags: ['food', 'popular'],
-//   },
-//   {
-//     id: 2,
-//     title: 'Yoga Studio',
-//     description: 'Find your inner peace with our beginner-friendly yoga classes.',
-//     rating: 4.9,
-//     price: '$$',
-//     image:
-//       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&h=400&q=80',
-//     tags: ['wellness', 'trending'],
-//   },
-//   {
-//     id: 3,
-//     title: 'Fitness Center',
-//     description: 'State-of-the-art equipment and personalized training programs.',
-//     rating: 4.7,
-//     price: '$$$',
-//     image:
-//       'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&h=400&q=80',
-//     tags: ['fitness', 'popular'],
-//   },
-//   {
-//     id: 4,
-//     title: 'Bookstore Cafe',
-//     description: 'Curated selection of books with artisanal coffee and pastries.',
-//     rating: 4.8,
-//     price: '$',
-//     image:
-//       'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&h=400&q=80',
-//     tags: ['cafe', 'new'],
-//   },
-//   {
-//     id: 5,
-//     title: 'Indie Cinema',
-//     description: 'Independent films and documentaries with comfortable seating.',
-//     rating: 4.6,
-//     price: '$$',
-//     image:
-//       'https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?auto=format&fit=crop&w=600&h=400&q=80',
-//     tags: ['entertainment', 'top rated'],
-//   },
-//   {
-//     id: 6,
-//     title: 'Mountain Getaway',
-//     description: 'Weekend retreat in the mountains with breathtaking views.',
-//     rating: 4.9,
-//     price: '$$$$',
-//     image:
-//       'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=600&h=400&q=80',
-//     tags: ['travel', 'for you'],
-//   },
-// ])
-
-// Computed
-// const filteredRecommendations = computed(() => {
-//   if (activeFilter.value === 'All') {
-//     return recommendations.value
-//   }
-
-//   return recommendations.value.filter((item) =>
-//     item.tags.some(
-//       (tag) => tag.toLowerCase() === activeFilter.value.toLowerCase().replace(' ', ''),
-//     ),
-//   )
-// })
-
 // Methods
 function setActiveFilter(filter: string) {
   activeFilter.value = filter
 }
+
 
 function handleSearch() {
   console.log('Searching for:', searchQuery.value)
@@ -111,23 +36,74 @@ function handleTouchEnd(index: number) {
   }
 }
 
-const { data, execute } = useApi<PopularMovies>(async () => {
-  if (!movieStore.loaded) {
-    return await tmdb.movies.popular()
-  }
-  // If already loaded, return the cached data
-  return { results: movieStore.movies } as PopularMovies
-})
+// const { data, execute } = useApi<MovieDiscoverResult>(async () => {
+//   if (!movieStore.loaded) {
+//     return await tmdb.discover.movie()
+//   }
+//   // If already loaded, return the cached data
+//   return { results: movieStore.movies } as MovieDiscoverResult
+// })
+// const { data, execute, loading, error } = useApi<MovieDiscoverResult>(async (filter?: string) => {
+//   if (!movieStore.loaded) {
+//     switch (filter) {
+//       case 'Popular':
+//         return await tmdb.movies.popular()
+//       case 'Trending':
+//         return await tmdb.trending.trending('movie','day') // example
+//       case 'New':
+//         return await tmdb.movies.nowPlaying()
+//       case 'Top Rated':
+//         return await tmdb.movies.topRated()
+//       case 'For You':
+//         return await tmdb.discover.movie({ with_genres: '18' }) // example: drama
+//       case 'Nearby':
+//         return await tmdb.discover.movie({ region: 'KE' }) // example: Kenya region
+//       default:
+//         return await tmdb.discover.movie()
+//     }
+//   }
 
-onMounted(execute)
+//   // return cached data
+//   return { results: movieStore.movies } as MovieDiscoverResult
+// })
+
+// onMounted(async() => execute)
+// watch(activeFilter, (newFilter) => {
+//   execute(newFilter)
+// }, { immediate: true })
 
 // Watch the API data and update the global store
-watch(data, (val) => {
-  if (val && !movieStore.loaded) {
-    movieStore.movies = val.results
-    movieStore.loaded = true
-    console.log(movieStore.movies)
-  }
+// watch(data, (val) => {
+//   if (val && !movieStore.loaded) {
+//     movieStore.movies = val.results
+//     movieStore.loaded = true
+//     console.log(movieStore.movies)
+//   }
+// })
+// map filters to API calls
+const filterToApi: Record<string, () => Promise<MovieDiscoverResult>> = {
+  'Popular':   () => tmdb.movies.popular(),
+  'Trending':  () => tmdb.trending.trending('movie','day'),
+  'New':       () => tmdb.movies.nowPlaying(),
+  'Top Rated': () => tmdb.movies.topRated(),
+  'For You':   () => tmdb.discover.movie({ with_genres: '18' }),
+  'Nearby':    () => tmdb.discover.movie({ region: 'KE' }),
+  'All':       () => tmdb.discover.movie(),
+}
+
+// create a reactive api instance that uses the current filter
+let api = useApi<MovieDiscoverResult>(() => filterToApi[activeFilter.value]())
+
+// refetch when filter changes
+watch(activeFilter, () => {
+  // re-bind api to use the new filter
+  api = useApi<MovieDiscoverResult>(() => filterToApi[activeFilter.value]())
+  api.execute()
+})
+
+// initial fetch
+onMounted(() => {
+  api.execute()
 })
 </script>
 
@@ -142,7 +118,7 @@ watch(data, (val) => {
         @filter-change="setActiveFilter"
       />
       <RecommendationList
-        :recommendations="movieStore.movies"
+        :recommendations="api.data.value?.results"
         @touch-start="handleTouchStart"
         @touch-end="handleTouchEnd"
       />
