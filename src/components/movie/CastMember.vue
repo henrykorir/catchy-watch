@@ -1,13 +1,24 @@
 <script setup lang="ts">
+import { getFullImagePath, ImageSizes, ImageFormats } from '@tdanks2000/tmdb-wrapper'
+import { computed } from 'vue'
+
 /**
  * Interface for a cast member
  * (should match the one in CastSection.vue for consistency)
  */
 export interface CastMember {
-  id: number | string
+  adult: boolean
+  gender: number
+  id: number
+  known_for_department: string
   name: string
+  original_name: string
+  popularity: number
+  profile_path: string | null
+  cast_id: number
   character: string
-  image: string
+  credit_id: string
+  order: number
 }
 
 /**
@@ -16,11 +27,23 @@ export interface CastMember {
 const props = defineProps<{
   actor: CastMember
 }>()
+const avatarUrl = computed(() =>
+  props.actor.profile_path
+    ? getFullImagePath(
+        'https://image.tmdb.org/t/p/',
+        ImageSizes.W300,
+        props.actor.profile_path,
+        ImageFormats.JPG,
+      )
+    : '',
+)
 </script>
 
 <template>
   <div class="cast-member">
-    <img :src="props.actor.image" :alt="props.actor.name" class="cast-img" />
+    <div class="flex justify-center items-center">
+      <img :src="avatarUrl" :alt="props.actor.name" class="cast-img" />
+    </div>
     <div class="cast-name">{{ props.actor.name }}</div>
     <div class="cast-character">{{ props.actor.character }}</div>
   </div>

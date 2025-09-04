@@ -41,7 +41,7 @@ const handleNotificationClick = (notificationId: number) => {
       <div v-if="!notification.read" class="notification-indicator"></div>
     </div>
 
-    <div  v-if="notifications.length === 0" class="empty-state">
+    <div v-if="notifications.length === 0" class="empty-state">
       <i class="fas fa-bell-slash"></i>
       <p>No notifications</p>
     </div>

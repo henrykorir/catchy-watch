@@ -1,37 +1,10 @@
-<template>
-  <div
-    class="card"
-    @touchstart="emit('touch-start', index)"
-    @touchend="emit('touch-end', index)"
-    @click="viewMovie"
-  >
-    <img :src="item.image" :alt="item.title" class="card-img" />
-    <div class="card-content">
-      <h3 class="card-title">{{ item.title }}</h3>
-      <p class="card-desc">{{ item.description }}</p>
-      <div class="card-meta">
-        <div class="rating"><i class="fas fa-star"></i> {{ item.rating }}</div>
-        <div class="price">{{ item.price }}</div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
+import { getFullImagePath, ImageFormats, ImageSizes, Movie } from '@tdanks2000/tmdb-wrapper'
 import { defineProps, defineEmits } from 'vue'
-
-// Define item type
-interface RecommendationItem {
-  image: string
-  title: string
-  description: string
-  rating: number | string
-  price: string
-}
 
 // Props
 const props = defineProps<{
-  item: RecommendationItem
+  item: Movie
   index: number
 }>()
 
@@ -42,9 +15,33 @@ const emit = defineEmits<{
 }>()
 
 const viewMovie = () => {
-  window.location.hash = `/movie/${props.index}` // ✅ simpler, triggers hashchange
+  window.location.hash = `/movie/${props.item.id}` // ✅ simpler, triggers hashchange
 }
+const posterUrl = getFullImagePath(
+  'https://image.tmdb.org/t/p/',
+  ImageSizes.W500,
+  props.item.poster_path,
+  ImageFormats.JPG,
+)
 </script>
+<template>
+  <div
+    class="card"
+    @touchstart="emit('touch-start', index)"
+    @touchend="emit('touch-end', index)"
+    @click="viewMovie"
+  >
+    <img :src="posterUrl" :alt="item.title" class="card-img" />
+    <div class="card-content">
+      <h3 class="card-title">{{ item.title }}</h3>
+      <p class="card-desc">{{ item.overview }}</p>
+      <div class="card-meta">
+        <div class="rating"><i class="fas fa-star"></i> {{ item.vote_average }}</div>
+        <div class="price">{{ item.release_date }}</div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .card {

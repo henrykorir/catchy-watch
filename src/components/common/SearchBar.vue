@@ -2,9 +2,10 @@
   <div class="search-bar">
     <input
       type="text"
-      placeholder="Search for recommendations..."
+      placeholder="Search by title or keyword..."
       :value="modelValue"
       @input="onInput"
+      @keyup.enter="emit('search')"
     />
     <button @click="emit('search')">
       <i class="fas fa-search"></i>
@@ -15,18 +16,15 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
 
-// Props
 defineProps<{
   modelValue: string
 }>()
 
-// Emits
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
   (e: 'search'): void
 }>()
 
-// Handlers
 const onInput = (event: Event) => {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
