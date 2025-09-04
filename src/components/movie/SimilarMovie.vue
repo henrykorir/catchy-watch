@@ -1,14 +1,6 @@
 <script setup lang="ts">
+import { Movie } from '@tdanks2000/tmdb-wrapper'
 import MovieCard from './MovieCard.vue'
-
-// Define the Movie type
-interface Movie {
-  id: number | string
-  title: string
-  year?: number
-  rating?: number
-  poster?: string
-}
 
 // Props with typing
 defineProps<{
@@ -16,14 +8,14 @@ defineProps<{
 }>()
 
 // Emit typing
-const emit = defineEmits<{
+defineEmits<{
   (e: 'movie-changed', movieId: number | string): void
 }>()
 
 // Handler
-const handleMovieSelection = (movieId: number | string) => {
-  alert(`Navigating to movie with ID: ${movieId}`)
-  emit('movie-changed', movieId)
+const handleMovieSelection = () => {
+  // alert(`Navigating to movie with ID: ${movieId}`)
+  // emit('movie-changed', movieId)
 }
 </script>
 

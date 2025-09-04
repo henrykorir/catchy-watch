@@ -1,96 +1,121 @@
 <script setup lang="ts">
-import { ref, computed, type Ref, type ComputedRef } from 'vue'
+import { ref, computed, watch } from 'vue'
+import type { MovieDetails } from '@tdanks2000/tmdb-wrapper'
+import dayjs from 'dayjs'
 
-/**
- * Movie interface for props typing
- */
-interface Movie {
-  title: string
-  year: number
-  rating: number
-  runtime: number
-  releaseDate: string
-  genres: string[]
-  tags: string[]
-  description: string
+interface MovieKeyword {
+  id: number
+  name: string
 }
 
-/**
- * Props definition
- */
+// Props
 const props = defineProps<{
-  movie: Movie
+  movie?: MovieDetails
+  tags?: MovieKeyword[]
 }>()
 
-/**
- * Emits definition for reusability instead of alerts
- */
+// Emits
 const emit = defineEmits<{
-  (e: 'play-trailer', movie: Movie): void
-  (e: 'toggle-watchlist', payload: { movie: Movie; inWatchlist: boolean }): void
-  (e: 'share', movie: Movie): void
+  (e: 'play-trailer', movie: MovieDetails): void
+  (e: 'toggle-watchlist', payload: { movie: MovieDetails; inWatchlist: boolean }): void
+  (e: 'share', movie: MovieDetails): void
 }>()
 
-/**
- * State
- */
-const inWatchlist: Ref<boolean> = ref(false)
+// Reactive state
+const movie = ref<MovieDetails>({
+  id: 0,
+  title: 'Loading...',
+  release_date: '',
+  runtime: 0,
+  vote_average: 0,
+  adult: false,
+  genres: [],
+  overview: '',
+  backdrop_path: '',
+  budget: 0,
+  homepage: '',
+  imdb_id: '',
+  original_language: '',
+  original_title: '',
+  popularity: 0,
+  production_companies: [],
+  production_countries: [],
+  revenue: 0,
+  spoken_languages: [],
+  status: '',
+  tagline: '',
+  video: false,
+  vote_count: 0,
+})
 
-/**
- * Methods
- */
-const playTrailer = (): void => {
-  emit('play-trailer', props.movie)
-}
+const movieTags = ref<MovieKeyword[]>([])
+const inWatchlist = ref(false)
 
-const toggleWatchlist = (): void => {
-  inWatchlist.value = !inWatchlist.value
-  emit('toggle-watchlist', { movie: props.movie, inWatchlist: inWatchlist.value })
-}
-
-const shareMovie = (): void => {
-  emit('share', props.movie)
-}
-
-/**
- * Computed values
- */
-const watchlistIcon: ComputedRef<string> = computed(() =>
-  inWatchlist.value ? 'fas fa-check' : 'fas fa-plus',
+// Watch props for changes and safely update refs
+watch(
+  () => props.movie,
+  (newMovie) => {
+    if (newMovie) movie.value = newMovie
+  },
+  { immediate: true },
 )
 
-const watchlistText: ComputedRef<string> = computed(() =>
+watch(
+  () => props.tags,
+  (newTags) => {
+    movieTags.value = newTags ?? []
+  },
+  { immediate: true },
+)
+
+// Methods (safe emits)
+const playTrailer = () => {
+  if (!movie.value || movie.value.id === 0) return
+  emit('play-trailer', movie.value)
+}
+
+const toggleWatchlist = () => {
+  if (!movie.value || movie.value.id === 0) return
+  inWatchlist.value = !inWatchlist.value
+  emit('toggle-watchlist', { movie: movie.value, inWatchlist: inWatchlist.value })
+}
+
+const shareMovie = () => {
+  if (!movie.value || movie.value.id === 0) return
+  emit('share', movie.value)
+}
+
+// Computed
+const watchlistIcon = computed(() => (inWatchlist.value ? 'fas fa-check' : 'fas fa-plus'))
+const watchlistText = computed(() =>
   inWatchlist.value ? 'Added to Watchlist' : 'Add to Watchlist',
 )
+const releaseYear = computed(() => movie.value.release_date?.split('-')[0] ?? 'N/A')
+const genres = computed(() => movie.value.genres.map((g) => g.name).join(', ') || 'N/A')
 </script>
 
 <template>
   <div class="movie-info">
     <h1 class="title">
-      {{ props.movie.title }}
-      <span class="year">({{ props.movie.year }})</span>
-      <span class="rating"> <i class="fas fa-star"></i> {{ props.movie.rating }} </span>
+      {{ movie.title }}
+      <span class="year">({{ releaseYear }})</span>
+      <span class="rating"><i class="fas fa-star"></i> {{ movie.vote_average }}</span>
     </h1>
 
     <div class="details">
-      <div class="detail-item"><i class="far fa-clock"></i> {{ props.movie.runtime }} min</div>
+      <div class="detail-item"><i class="far fa-clock"></i> {{ movie.runtime }} min</div>
       <div class="detail-item">
-        <i class="far fa-calendar-alt"></i> {{ props.movie.releaseDate }}
+        <i class="far fa-calendar-alt"></i>
+        {{ dayjs(movie.release_date).format('DD MMMM, YYYY').toLowerCase() }}
       </div>
-      <div class="detail-item">
-        <i class="fas fa-ticket-alt"></i> {{ props.movie.genres.join(', ') }}
-      </div>
+      <div class="detail-item"><i class="fas fa-ticket-alt"></i> {{ genres }}</div>
     </div>
 
     <div class="tags">
-      <span  v-for="tag in props.movie.tags" :key="tag" class="tag">
-        {{ tag }}
-      </span>
+      <span v-for="tag in movieTags" :key="tag.id" class="tag">{{ tag.name }}</span>
     </div>
 
-    <p class="description">
-      {{ props.movie.description }}
-    </p>
+    <p class="description">{{ movie.overview || 'No description available.' }}</p>
 
     <div class="action-buttons">
       <button class="btn btn-primary" @click="playTrailer">
@@ -143,6 +168,7 @@ const watchlistText: ComputedRef<string> = computed(() =>
   padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;
+  border-radius: 0.25rem;
 }
 .btn-primary {
   background: #007bff;
