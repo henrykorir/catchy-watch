@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getFullImagePath, ImageFormats, ImageSizes, Movie } from '@tdanks2000/tmdb-wrapper'
 import { defineProps, defineEmits } from 'vue'
+import dayjs from 'dayjs'
 
 // Props
 const props = defineProps<{
@@ -37,7 +38,14 @@ const posterUrl = getFullImagePath(
       <p class="card-desc">{{ item.overview }}</p>
       <div class="card-meta">
         <div class="rating"><i class="fas fa-star"></i> {{ item.vote_average }}</div>
-        <div class="price">{{ item.release_date }}</div>
+        <div class="price">
+          {{
+            dayjs(item.release_date)
+              .format('DD MMMM, YYYY')
+              .toLowerCase()
+              .replace(/\b\w/g, (char) => char.toUpperCase())
+          }}
+        </div>
       </div>
     </div>
   </div>

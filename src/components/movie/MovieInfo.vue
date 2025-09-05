@@ -106,7 +106,12 @@ const genres = computed(() => movie.value.genres.map((g) => g.name).join(', ') |
       <div class="detail-item"><i class="far fa-clock"></i> {{ movie.runtime }} min</div>
       <div class="detail-item">
         <i class="far fa-calendar-alt"></i>
-        {{ dayjs(movie.release_date).format('DD MMMM, YYYY').toLowerCase() }}
+        {{
+          dayjs(movie.release_date)
+            .format('DD MMMM, YYYY')
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase())
+        }}
       </div>
       <div class="detail-item"><i class="fas fa-ticket-alt"></i> {{ genres }}</div>
     </div>
