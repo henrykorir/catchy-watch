@@ -1,11 +1,20 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="fixed inset-0 flex items-center justify-center">
-    <div class="flex flex-col items-center gap-4 text-center">
-      <h1 class="text-4xl font-bold">Vast Movie Library</h1>
-      <p class="text-lg">Discover thousands of movies and TV shows</p>
-      <a href="#/recommendation" class="btn">Get Started</a>
+  <div class="">
+    <div
+      class="flex items-center justify-between bg-gradient-to-tr from-[#6e8efb] to-[#a777e3] py-[15px]"
+      :style="{ background: 'linear-gradient(135deg, #6e8efb, #a777e3)', padding: '15px 0' }"
+    >
+      <span>CatchyWatch</span>
+      <span><i class="fa-solid fa-bars"></i></span>
+    </div>
+    <div class="fixed inset-0 flex items-center justify-center">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <h1 class="text-4xl font-bold">Vast Movie Library</h1>
+        <p class="text-lg">Discover thousands of movies and TV shows</p>
+        <a href="#/recommendation" class="btn">Get Started</a>
+      </div>
     </div>
   </div>
 </template>

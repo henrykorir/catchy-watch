@@ -53,7 +53,8 @@ const handleMovieSelect = (movieId: number) => {
 
 <style scoped>
 .watchlist-section {
-  background-color: #1f1f1f;
+  /* background-color: #1f1f1f; */
+  width: 100%;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
