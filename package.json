@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",
+    "@supabase/supabase-js": "^2.57.0",
     "@tdanks2000/tmdb-wrapper": "^1.3.3",
     "axios": "^1.11.0",
     "dayjs": "^1.11.18",

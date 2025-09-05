@@ -42,7 +42,7 @@ const posterUrl = computed(() =>
         props.movie.poster_path,
         ImageFormats.JPG,
       )
-    : '',
+    : 'no-poster.svg',
 )
 
 /**

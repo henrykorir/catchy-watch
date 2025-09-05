@@ -63,6 +63,41 @@ const watchlistMovies = ref([
     rating: 9.0,
     poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
   },
+  {
+    id: 2,
+    title: 'The Dark Knight',
+    year: 2008,
+    rating: 9.0,
+    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+  },
+  {
+    id: 3,
+    title: 'Interstellar',
+    year: 2014,
+    rating: 8.6,
+    poster: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+  },
+  {
+    id: 4,
+    title: 'Pulp Fiction',
+    year: 1994,
+    rating: 8.9,
+    poster: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
+  },
+  {
+    id: 5,
+    title: 'Pulp Fiction',
+    year: 1994,
+    rating: 8.9,
+    poster: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
+  },
+  {
+    id: 6,
+    title: 'The Dark Knight',
+    year: 2008,
+    rating: 9.0,
+    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+  },
 ])
 
 const settingsOptions = ref([
@@ -155,7 +190,7 @@ const handleNotificationClick = (notificationId: number) => {
 
 .content-section {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr;
   gap: 2rem;
 }
 

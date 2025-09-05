@@ -90,7 +90,7 @@
 
   /* Top Navigation */
   .top-nav {
-    @apply bg-[var(--dark-light)] p-4 rounded-xl mb-8 flex justify-between items-center shadow-md gap-8;
+    @apply /*bg-[var(--dark-light)]*/ p-4 rounded-xl mb-8 flex justify-between items-center shadow-md gap-8;
   }
   .nav-items {
     @apply flex items-center gap-6;
@@ -121,7 +121,7 @@
 
   /* Watchlist Section */
   .watchlist-section {
-    @apply bg-[var(--dark-light)] rounded-xl p-6 shadow-md;
+    @apply /* bg-[var(--dark-light)] */ rounded-xl p-6 shadow-md;
   }
   .section-header {
     @apply flex justify-between items-center mb-6;
@@ -147,12 +147,12 @@
     @apply w-5 text-[var(--primary)];
   }
   .settings-panel {
-    @apply bg-[var(--dark-light)] rounded-xl p-6 shadow-md;
+    @apply /* bg-[var(--dark-light)] */ rounded-xl p-6 shadow-md;
   }
 
   /* Notifications */
   .notifications-panel {
-    @apply bg-[var(--dark-light)] rounded-xl p-6 shadow-md;
+    @apply /* bg-[var(--dark-light)] */ rounded-xl p-6 shadow-md;
   }
   .notification {
     @apply flex items-center p-4 rounded-lg mb-3 cursor-pointer transition-colors relative;
@@ -211,5 +211,48 @@
     .movies-grid {
       @apply grid-cols-2;
     }
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+#app {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+.container {
+  max-width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
   }
 }

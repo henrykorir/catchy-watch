@@ -2,9 +2,10 @@
   <header>
     <div class="container">
       <div class="header-content">
-        <div class="logo">Catchy Watch</div>
+        <div class="logo">CatchyWatch</div>
         <div class="user-actions">
-          <i class="fas fa-bell"></i>
+          <i class="fas fa-bell cursor-pointer"></i>
+          <i class="fas fa-magnifying-glass cursor-pointer"></i>
         </div>
       </div>
     </div>
@@ -35,5 +36,11 @@ header {
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* spacing between icons */
 }
 </style>

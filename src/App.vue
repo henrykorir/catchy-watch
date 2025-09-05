@@ -23,8 +23,8 @@ function setActiveNav(nav: string) {
 }
 
 const navigation = ref<NavItem[]>([
-  { name: 'home', icon: 'fas fa-home', label: 'Home', link: '#/' },
-  { name: 'discover', icon: 'fas fa-compass', label: 'Discover', link: '#/recommendation' },
+  { name: 'home', icon: 'fas fa-home', label: 'Home', link: '#/recommendation' },
+  { name: 'favorite', icon: 'fas fa-list', label: 'Discover', link: '#/account' },
   { name: 'saved', icon: 'fas fa-heart', label: 'Saved', link: '#/account' },
   { name: 'profile', icon: 'fas fa-user', label: 'Profile', link: '#/account' },
 ])
