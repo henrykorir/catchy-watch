@@ -25,10 +25,6 @@ const selectMovie = (): void => {
 
   // Emit to parent
   emit('movie-selected', props.movie.id)
-
-  // Optional: update hash and scroll
-  window.location.hash = `/movie/${props.movie.id}`
-  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 /**
@@ -49,7 +45,7 @@ const posterUrl = computed(() =>
  * Computed formatted release date (e.g., 29 July, 2025)
  */
 const releaseDateFormatted = computed(() =>
-  props.movie.release_date ? dayjs(props.movie.release_date).format('DD MMMM, YYYY') : 'N/A',
+  props.movie.release_date ? dayjs(props.movie.release_date).year() : 'N/A',
 )
 </script>
 

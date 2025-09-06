@@ -7,6 +7,8 @@ import NotFound from './components/NotFound.vue'
 import MovieDetailsView from './components/MovieDetailsView.vue'
 import Header from './components/common/Header.vue'
 import BottomNavigation from './components/common/BottomNavigation.vue'
+import AuthProvider from './components/auth/AuthProvider.vue'
+import AuthForm from './components/auth/AuthForm.vue'
 
 /* ---------------- NAVIGATION ---------------- */
 interface NavItem {
@@ -34,6 +36,7 @@ const routes: Record<string, any> = {
   '/': OnBoardingView,
   '/recommendation': RecommendationView,
   '/account': AccountView,
+  '/auth': AuthForm,
 }
 
 const currentPath = ref<string>(window.location.hash.slice(1) || '/')
@@ -71,17 +74,18 @@ const currentView = computed(() => resolveRoute(currentPath.value))
 </script>
 
 <template>
-  <div>
-    <!-- Show header + bottom navigation only when not onboarding -->
-    <Header v-if="currentPath !== '/'" />
+  <AuthProvider>
+    <div>
+      <Header v-if="currentPath !== '/'" />
 
-    <component :is="currentView.component" v-bind="currentView.props" />
+      <component :is="currentView.component" v-bind="currentView.props" />
 
-    <BottomNavigation
-      v-if="currentPath !== '/'"
-      :navigation="navigation"
-      :active-nav="activeNav"
-      @nav-change="setActiveNav"
-    />
-  </div>
+      <BottomNavigation
+        v-if="currentPath !== '/'"
+        :navigation="navigation"
+        :active-nav="activeNav"
+        @nav-change="setActiveNav"
+      />
+    </div>
+  </AuthProvider>
 </template>

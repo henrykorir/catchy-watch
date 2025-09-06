@@ -79,7 +79,6 @@ const keywordsData = ref<MovieKeywordsResponse>({ id: 0, keywords: [] })
 const movieId = ref<number | null>()
 
 defineProps<{ id: number }>()
-
 const updateMovieId = () => {
   const id = Number(window.location.hash.replace('#/movie/', ''))
   movieId.value = isNaN(id) ? null : id
@@ -144,8 +143,17 @@ onUnmounted(() => {
 })
 
 // ---------------- Methods ----------------
-const loadMovie = (id: number | string) => {
-  alert(`Loading movie with ID: ${id}`)
+const loadMovie = async (id: number | string) => {
+  window.location.hash = `/movie/${id}`
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const onToggleWatchList = () => {
+  /* 1). If the movie is not in the watch list */
+  //  a). Check if the user is logged in
+  //    i). if the user is logged in add the movie to users watchlist
+  //    ii). else popup a loggin form bearing a consent
+  /* 2). Else remove it from the watchlist */
 }
 </script>
 
@@ -154,7 +162,11 @@ const loadMovie = (id: number | string) => {
     <main>
       <div class="movie-content">
         <MoviePoster :posterUrl="posterUrl" :title="selectedMovie.title" />
-        <MovieInfo :movie="selectedMovie" :tags="keywordsData.keywords" />
+        <MovieInfo
+          :movie="selectedMovie"
+          :tags="keywordsData.keywords"
+          @toggle-watchlist="onToggleWatchList"
+        />
       </div>
 
       <CastSection :cast="creditsData.cast" />
