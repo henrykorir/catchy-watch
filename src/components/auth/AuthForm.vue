@@ -1,28 +1,36 @@
 <script setup lang="ts">
-import { inject, Ref } from 'vue'
-
-type Mode = 'signin' | 'signup'
-type AuthContext = {
-  mode: Ref<Mode>
-  email: Ref<string>
-  password: Ref<string>
-  showPassword: Ref<boolean>
-  errorMessage: Ref<string>
-  handleAuth: (action: Mode) => Promise<void>
-  signInWithProvider: (provider: 'google' | 'facebook') => Promise<void>
-  resetForm: () => void
-}
+import { inject } from 'vue'
+import { AuthContext } from '../../types/auth'
 
 const auth = inject<AuthContext>('auth')
 if (!auth) throw new Error('Auth context not found')
+const handleSubmit = () => {
+  auth.mode.value === 'reset' ? auth.handleResetPassword() : auth.handleAuth(auth.mode.value)
+}
 </script>
 
 <template>
   <div class="container">
     <div class="auth-container">
       <div class="auth-header">
-        <h2>{{ auth.mode.value === 'signin' ? 'Welcome Back' : 'Create Account' }}</h2>
-        <p>{{ auth.mode.value === 'signin' ? 'Sign in to continue' : 'Sign up to get started' }}</p>
+        <h2>
+          {{
+            auth.mode.value === 'signin'
+              ? 'Welcome Back'
+              : auth.mode.value === 'signup'
+                ? 'Create Account'
+                : 'Reset Password'
+          }}
+        </h2>
+        <p>
+          {{
+            auth.mode.value === 'signin'
+              ? 'Sign in to continue'
+              : auth.mode.value === 'signup'
+                ? 'Sign up to get started'
+                : 'Enter your email to reset your password'
+          }}
+        </p>
       </div>
 
       <div class="auth-content">
@@ -33,7 +41,8 @@ if (!auth) throw new Error('Auth context not found')
         </div>
 
         <!-- Auth Form -->
-        <form class="auth-form" @submit.prevent="auth.handleAuth(auth.mode.value)">
+        <form class="auth-form" @submit.prevent="handleSubmit">
+          <!-- Email -->
           <div class="form-group">
             <label :for="`${auth.mode}-email`">Email</label>
             <input
@@ -45,7 +54,8 @@ if (!auth) throw new Error('Auth context not found')
             />
           </div>
 
-          <div class="form-group">
+          <!-- Password (hide for reset mode) -->
+          <div v-if="auth.mode.value !== 'reset'" class="form-group">
             <label :for="`${auth.mode}-password`">Password</label>
             <div class="input-container">
               <input
@@ -53,7 +63,9 @@ if (!auth) throw new Error('Auth context not found')
                 v-model="auth.password.value"
                 :type="auth.showPassword.value ? 'text' : 'password'"
                 required
-                :placeholder="auth.mode.value === 'signin' ? 'Enter your password' : 'Choose a password'"
+                :placeholder="
+                  auth.mode.value === 'signin' ? 'Enter your password' : 'Choose a password'
+                "
               />
               <button
                 type="button"
@@ -65,34 +77,78 @@ if (!auth) throw new Error('Auth context not found')
             </div>
           </div>
 
-          <a v-if="auth.mode.value === 'signin'" href="#">Forgot password?</a>
+          <!-- Forgot Password (link only visible in signin mode) -->
+          <button
+            v-if="auth.mode.value === 'signin'"
+            type="button"
+            class="text-sm text-blue-600 hover:underline self-end"
+            @click="auth.mode.value = 'reset'"
+          >
+            Forgot password?
+          </button>
 
-          <button type="submit" class="btn" :class="auth.mode.value === 'signin' ? 'btn-primary' : 'btn-signup'">
-            {{ auth.mode.value === 'signin' ? 'Sign In' : 'Create Account' }}
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn"
+            :class="{
+              'btn-primary': auth.mode.value === 'signin' || auth.mode.value === 'reset',
+              'btn-signup': auth.mode.value === 'signup',
+            }"
+          >
+            {{
+              auth.mode.value === 'signin'
+                ? 'Sign In'
+                : auth.mode.value === 'signup'
+                  ? 'Create Account'
+                  : 'Send Reset Link'
+            }}
           </button>
         </form>
 
-        <!-- Divider -->
-        <div class="divider"><span>OR</span></div>
+        <!-- Divider (hide for reset mode) -->
+        <div v-if="auth.mode.value !== 'reset'" class="divider">
+          <span>OR</span>
+        </div>
 
-        <!-- OAuth Buttons -->
-        <div class="oauth-buttons">
+        <!-- OAuth Buttons (hide for reset mode) -->
+        <div v-if="auth.mode.value !== 'reset'" class="oauth-buttons">
           <button class="btn btn-oauth" @click="auth.signInWithProvider('google')">
-            <img class="oauth-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+            <img
+              class="oauth-icon"
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+            />
             Continue with Google
           </button>
 
           <button class="btn btn-oauth" @click="auth.signInWithProvider('facebook')">
-            <img class="oauth-icon" src="https://www.svgrepo.com/show/475664/facebook-color.svg" alt="Facebook" />
+            <img
+              class="oauth-icon"
+              src="https://www.svgrepo.com/show/475664/facebook-color.svg"
+              alt="Facebook"
+            />
             Continue with Facebook
           </button>
         </div>
 
         <!-- Footer Links -->
         <div class="auth-footer">
-          <button type="button" @click="auth.mode.value = auth.mode.value === 'signin' ? 'signup' : 'signin'">
-            {{ auth.mode.value === 'signin' ? "Don't have an account? Sign Up" : 'Already have an account? Sign In' }}
-          </button>
+          <template v-if="auth.mode.value === 'signin'">
+            <button type="button" @click="auth.mode.value = 'signup'">
+              Don't have an account? Sign Up
+            </button>
+          </template>
+
+          <template v-else-if="auth.mode.value === 'signup'">
+            <button type="button" @click="auth.mode.value = 'signin'">
+              Already have an account? Sign In
+            </button>
+          </template>
+
+          <template v-else-if="auth.mode.value === 'reset'">
+            <button type="button" @click="auth.mode.value = 'signin'">Back to Sign In</button>
+          </template>
         </div>
       </div>
     </div>

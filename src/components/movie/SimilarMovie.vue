@@ -8,14 +8,14 @@ defineProps<{
 }>()
 
 // Emit typing
-defineEmits<{
+const emit = defineEmits<{
   (e: 'movie-changed', movieId: number | string): void
 }>()
 
 // Handler
-const handleMovieSelection = () => {
+const handleMovieSelection = (movieId: number) => {
   // alert(`Navigating to movie with ID: ${movieId}`)
-  // emit('movie-changed', movieId)
+  emit('movie-changed', movieId)
 }
 </script>
 
