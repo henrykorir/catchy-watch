@@ -12,9 +12,12 @@ import {
   ImageFormats,
   SimilarMovies,
   MovieDetails,
+  Videos,
+  Video,
 } from '@tdanks2000/tmdb-wrapper'
 import { useApi } from '../composables/useApi'
 import tmdb from '../lib/tmdb-auth'
+import VideoIframe from './widgets/VideoIframe.vue'
 
 // ---------------- Interfaces ----------------
 interface MovieKeyword {
@@ -76,7 +79,9 @@ const selectedMovie = ref<MovieDetails>({
 const similarMovies = ref<Movie[]>([])
 const creditsData = ref<MovieCreditsResponse>({ id: 0, cast: [] })
 const keywordsData = ref<MovieKeywordsResponse>({ id: 0, keywords: [] })
+const videosData = ref<Videos>()
 const movieId = ref<number | null>()
+const show = ref(false)
 
 defineProps<{ id: number }>()
 const updateMovieId = () => {
@@ -93,7 +98,7 @@ const posterUrl = computed(() =>
         selectedMovie.value?.poster_path,
         ImageFormats.JPG,
       )
-    : 'https://via.placeholder.com/92x138?text=No+Image',
+    : 'no-poster.svg',
 )
 
 // ---------------- API Calls ----------------
@@ -101,7 +106,6 @@ const { execute: fetchKeywords } = useApi<MovieKeywordsResponse>(async () => {
   if (!movieId.value) return { id: 0, keywords: [] }
   const data = await tmdb.movies.keywords(movieId.value)
   keywordsData.value = data
-  console.log(keywordsData.value)
   return data
 })
 
@@ -119,6 +123,33 @@ const { execute: fetchCredits } = useApi<MovieCreditsResponse>(async () => {
   return data
 })
 
+const { execute: fetchVideos } = useApi<Videos>(async () => {
+  if (!movieId.value) return { id: 0, results: [] }
+  const data = await tmdb.movies.videos(movieId.value)
+  videosData.value = data
+  return data
+})
+
+// ---------------- Computed ----------------
+const trailer = computed<Video | null>(() => {
+  if (!videosData.value) return null
+
+  // Prefer "Official Trailer"
+  const official = videosData.value.results.find(
+    (video) =>
+      video.type === 'Trailer' && video.site === 'YouTube' && video.name.includes('Official'),
+  )
+
+  if (official) return official
+
+  // Fallback: any YouTube trailer
+  return (
+    videosData.value.results.find(
+      (video) => video.type === 'Trailer' && video.site === 'YouTube',
+    ) || null
+  )
+})
+
 // ---------------- Watchers ----------------
 watch(
   movieId,
@@ -128,13 +159,14 @@ watch(
     // fetch details when movieId changes
     selectedMovie.value = await tmdb.movies.details(id)
     await Promise.all([fetchKeywords(), fetchSimilar(), fetchCredits()])
+    fetchVideos()
   },
   { immediate: true },
-) // <-- Added immediate: true for initial load
+)
 
 // ---------------- Lifecycle ----------------
 onMounted(() => {
-  updateMovieId() // This will now trigger the watch immediately
+  updateMovieId()
   window.addEventListener('hashchange', updateMovieId)
 })
 
@@ -149,11 +181,19 @@ const loadMovie = async (id: number | string) => {
 }
 
 const onToggleWatchList = () => {
-  /* 1). If the movie is not in the watch list */
-  //  a). Check if the user is logged in
-  //    i). if the user is logged in add the movie to users watchlist
-  //    ii). else popup a loggin form bearing a consent
-  /* 2). Else remove it from the watchlist */
+  // TODO: implement watchlist logic
+}
+
+const onPlayTrailer = () => {
+  if (trailer.value) {
+    show.value = true
+  } else {
+    alert('No trailer available for this movie')
+  }
+}
+
+const onCloseVideo = () => {
+  show.value = false
 }
 </script>
 
@@ -166,12 +206,21 @@ const onToggleWatchList = () => {
           :movie="selectedMovie"
           :tags="keywordsData.keywords"
           @toggle-watchlist="onToggleWatchList"
+          @play-trailer="onPlayTrailer"
         />
       </div>
 
       <CastSection :cast="creditsData.cast" />
 
       <SimilarMovie :movies="similarMovies" @movie-changed="loadMovie" />
+
+      <VideoIframe
+        v-if="trailer"
+        :videoId="trailer.key"
+        :show="show"
+        :title="selectedMovie.title + ' Trailer'"
+        @close="onCloseVideo"
+      />
     </main>
   </div>
 </template>
