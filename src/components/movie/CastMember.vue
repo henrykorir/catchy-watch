@@ -35,7 +35,7 @@ const avatarUrl = computed(() =>
         props.actor.profile_path,
         ImageFormats.JPG,
       )
-    : '',
+    : `${props.actor.gender === 1 ? 'no-avatar-female.svg' : 'no-avatar-male.svg'}`,
 )
 </script>
 
