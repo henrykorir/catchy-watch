@@ -4,6 +4,7 @@ import WatchlistSection from './account/WatchlistSection.vue'
 import SettingsPanel from './account/SettingsPanel.vue'
 import NotificationsPanel from './account/NotificationsPanel.vue'
 import { ref } from 'vue'
+import { supabase } from '../lib/supabase-auth'
 
 // Reactive data
 const activeNavItem = ref('watchlist')
@@ -139,8 +140,10 @@ const handleMovieSelect = (movieId: number) => {
   alert(`Movie selected with ID: ${movieId}`)
 }
 
-const handleSettingsOptionClick = (option: string) => {
+const handleSettingsOptionClick = async (option: string) => {
   alert(`Settings option clicked: ${option}`)
+  if(option === 'Logout')
+  await supabase.auth.signOut()
 }
 
 const handleNotificationClick = (notificationId: number) => {

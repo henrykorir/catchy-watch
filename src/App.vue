@@ -9,6 +9,7 @@ import Header from './components/common/Header.vue'
 import BottomNavigation from './components/common/BottomNavigation.vue'
 import AuthProvider from './components/auth/AuthProvider.vue'
 import AuthForm from './components/auth/AuthForm.vue'
+import SearchResultsView from './components/SearchResultsView.vue'
 
 /* ---------------- NAVIGATION ---------------- */
 interface NavItem {
@@ -37,6 +38,7 @@ const routes: Record<string, any> = {
   '/recommendation': RecommendationView,
   '/account': AccountView,
   '/auth': AuthForm,
+  '/search': SearchResultsView,
 }
 
 const currentPath = ref<string>(window.location.hash.slice(1) || '/')
@@ -55,15 +57,20 @@ onBeforeUnmount(() => {
 })
 
 function resolveRoute(path: string) {
+  // Separate query string
+  const [pathname, queryString] = path.split('?')
+
   // Dynamic route check: /movie/:id
-  if (path.startsWith('/movie/')) {
-    const id = path.split('/')[2]
+  if (pathname.startsWith('/movie/')) {
+    const id = pathname.split('/')[2]
     return { component: MovieDetailsView, props: { id } }
   }
 
-  // Static route
-  if (routes[path]) {
-    return { component: routes[path], props: {} }
+  // Static route: /search, /account, etc.
+  if (routes[pathname]) {
+    // Pass query params down as props
+    const queryParams = new URLSearchParams(queryString || '')
+    return { component: routes[pathname], props: { queryParams } }
   }
 
   // Fallback

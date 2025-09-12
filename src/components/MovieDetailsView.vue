@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
 
 import MoviePoster from './movie/MoviePoster.vue'
 import MovieInfo from './movie/MovieInfo.vue'
@@ -17,6 +17,8 @@ import {
 import { useApi } from '../composables/useApi'
 import tmdb from '../lib/tmdb-auth'
 import VideoIframe from './widgets/VideoIframe.vue'
+import { AuthContext } from '../types/auth'
+import { supabase } from '../lib/supabase-auth'
 
 // ---------------- State ----------------
 const selectedMovieDetails = ref<AppendToResponse<
@@ -31,6 +33,7 @@ const isLoading = ref(false)
 const error = ref<string | null>(null)
 
 defineProps<{ id: number }>()
+const auth = inject<AuthContext>('auth')
 
 // ---------------- Utilities ----------------
 const updateMovieId = () => {
@@ -134,9 +137,47 @@ const loadMovie = async (id: number | string) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-const onToggleWatchList = () => {
-  // TODO: implement watchlist logic
-  console.log('Toggle watchlist for movie:', selectedMovieDetails.value?.id)
+const onToggleWatchList = async (payload: { id: number }) => {
+  if (!auth) throw new Error('Auth context not found')
+
+  const movie_id = payload.id || selectedMovieDetails.value?.id
+  if (!movie_id) return
+
+  // Ensure the user is signed in
+  if (!auth.user) {
+    alert('Login to add watchlist')
+    return
+  }
+
+  try {
+    // Check if the movie is already in the user's watchlist
+    const { data, error } = await supabase
+      .from('watchlist')
+      .select('*', { count: 'exact' })
+      .eq('user_id', auth.user.value.id)
+      .eq('movie_id', movie_id)
+
+    if (error) throw error
+
+    if (data?.length === 0) {
+      // Insert if not exists
+      await supabase.from('watchlist').insert({
+        user_id: auth.user.value.id,
+        movie_id: movie_id,
+      })
+      console.log('Movie added to watchlist')
+    } else {
+      // Remove if exists (toggle behavior)
+      await supabase
+        .from('watchlist')
+        .delete()
+        .eq('user_id', auth.user.value.id)
+        .eq('movie_id', movie_id)
+      console.log('Movie removed from watchlist')
+    }
+  } catch (err: any) {
+    console.error('Error toggling watchlist:', err.message)
+  }
 }
 
 const onPlayTrailer = () => {

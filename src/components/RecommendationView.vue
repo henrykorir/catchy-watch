@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import SearchBar from './common/SearchBar.vue'
 import FilterSection from './recommendation/FilterSection.vue'
 import RecommendationList from './recommendation/RecommendationList.vue'
 import { useApi } from '../composables/useApi'
@@ -8,7 +7,6 @@ import tmdb from '../lib/tmdb-auth'
 import { MovieDiscoverResult } from '@tdanks2000/tmdb-wrapper'
 
 // State
-const searchQuery = ref('')
 const activeFilter = ref('All')
 const touchedCard = ref<number | null>(null)
 // const loading = ref(true)
@@ -18,10 +16,6 @@ const filters = ref(['All', 'Popular', 'Trending', 'New', 'Top Rated', 'For You'
 // Methods
 function setActiveFilter(filter: string) {
   activeFilter.value = filter
-}
-
-function handleSearch() {
-  console.log('Searching for:', searchQuery.value)
 }
 
 function handleTouchStart(index: number) {
@@ -65,7 +59,7 @@ onMounted(() => {
   <div id="">
     <!-- <Header /> -->
     <div class="container">
-      <SearchBar v-model="searchQuery" @search="handleSearch" />
+      <!-- <SearchBar v-model="searchQuery" @search="handleSearch" /> -->
       <FilterSection
         :filters="filters"
         :active-filter="activeFilter"

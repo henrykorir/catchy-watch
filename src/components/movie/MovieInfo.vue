@@ -17,7 +17,7 @@ const props = defineProps<{
 // Emits
 const emit = defineEmits<{
   (e: 'play-trailer', movie: MovieDetails): void
-  (e: 'toggle-watchlist', payload: { movie: MovieDetails; inWatchlist: boolean }): void
+  (e: 'toggle-watchlist', payload: { id: number }): void
   (e: 'share', movie: MovieDetails): void
 }>()
 
@@ -77,7 +77,7 @@ const playTrailer = () => {
 const toggleWatchlist = () => {
   if (!movie.value || movie.value.id === 0) return
   inWatchlist.value = !inWatchlist.value
-  emit('toggle-watchlist', { movie: movie.value, inWatchlist: inWatchlist.value })
+  emit('toggle-watchlist', { id: movie.value.id })
 }
 
 const shareMovie = () => {
