@@ -82,7 +82,7 @@ function onViewMovieDetails(movie_id: number){
       <li
         v-for="item in results.results"
         :key="item.id + '-' + 'movie'"
-        class="flex gap-4 bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden cursor-pointer" @click="onViewMovieDetails(item.id)"
+        class="flex gap-6 bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden cursor-pointer" @click="onViewMovieDetails(item.id)"
       >
         <img
           :src="posterUrl(item)"

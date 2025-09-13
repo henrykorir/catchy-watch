@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getFullImagePath, ImageFormats, ImageSizes, Movie } from '@tdanks2000/tmdb-wrapper'
-import { defineProps, defineEmits } from 'vue'
+import { defineProps } from 'vue'
 import dayjs from 'dayjs'
 
 // Props
