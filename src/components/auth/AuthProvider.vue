@@ -4,6 +4,10 @@ import { supabase } from '../../lib/supabase-auth'
 
 type Mode = 'signin' | 'signup' | 'reset'
 
+// ✅ Read env variables
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY
+const TMDB_BASE_URL = import.meta.env.VITE_TMDB_API_URL || 'https://api.themoviedb.org/3'
+
 // Reactive state
 const mode = ref<Mode>('signin')
 const email = ref('')
@@ -13,6 +17,8 @@ const errorMessage = ref('')
 const successMessage = ref('')
 const user = ref<any>(null)
 const session = ref<any>(null)
+const guestSessionId = ref<string | null>(null)
+const guestSessionExpiry = ref<string | null>(null)
 
 // Reset form
 function resetForm() {
@@ -21,6 +27,29 @@ function resetForm() {
   errorMessage.value = ''
   successMessage.value = ''
   showPassword.value = false
+}
+
+// Create a TMDB guest session
+async function createGuestSession() {
+  try {
+    const res = await fetch(
+      `${TMDB_BASE_URL}/authentication/guest_session/new?api_key=${TMDB_API_KEY}`,
+    )
+    const json = await res.json()
+    if (!json.success) throw new Error('Failed to create TMDB guest session')
+    guestSessionId.value = json.guest_session_id
+    guestSessionExpiry.value = json.expires_at
+
+    // Optional: persist in Supabase for cross-device use
+    if (user.value?.id) {
+      await supabase.from('user_sessions').insert({
+        user_id: user.value.id,
+        session_token: guestSessionId.value,
+      })
+    }
+  } catch (err: any) {
+    console.error('TMDB guest session error:', err)
+  }
 }
 
 // Handle signin / signup
@@ -36,6 +65,7 @@ async function handleAuth(action: 'signin' | 'signup') {
       if (error) throw error
       session.value = data.session
       user.value = data.user
+      await createGuestSession()
     } else {
       const { data, error } = await supabase.auth.signUp({
         email: email.value,
@@ -44,6 +74,7 @@ async function handleAuth(action: 'signin' | 'signup') {
       if (error) throw error
       session.value = data.session
       user.value = data.user
+      await createGuestSession()
     }
     resetForm()
   } catch (err: any) {
@@ -80,6 +111,7 @@ async function signInWithProvider(provider: 'google' | 'facebook') {
     })
     if (error) throw error
     resetForm()
+    // After redirect, Supabase will set user/session. Call createGuestSession then.
   } catch (err: any) {
     errorMessage.value = err.message
   }
@@ -93,9 +125,16 @@ onMounted(async () => {
   session.value = data.session
   user.value = data.session?.user ?? null
 
+  if (user.value) {
+    await createGuestSession()
+  }
+
   const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
     session.value = newSession
     user.value = newSession?.user ?? null
+    if (user.value) {
+      createGuestSession()
+    }
   })
   unsubscribe = listener.subscription.unsubscribe
 })
@@ -114,6 +153,8 @@ provide('auth', {
   successMessage,
   user,
   session,
+  guestSessionId,
+  guestSessionExpiry,
   handleAuth,
   handleResetPassword,
   signInWithProvider,

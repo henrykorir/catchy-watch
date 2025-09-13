@@ -10,6 +10,8 @@ export interface AuthContext {
   successMessage: Ref<string>
   user: Ref<User | null>
   session: Ref<Session | null>
+  guestSessionId: ref<string | null>
+  guestSessionExpiry: ref<string | null>
   handleAuth: (action: 'signin' | 'signup') => Promise<void>
   handleResetPassword: () => Promise<void>
   signInWithProvider: (provider: 'google' | 'facebook') => Promise<void>

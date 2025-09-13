@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import type { MovieDetails } from '@tdanks2000/tmdb-wrapper'
+import type { AppendToResponse, MovieDetails } from '@tdanks2000/tmdb-wrapper'
 import dayjs from 'dayjs'
 
 interface MovieKeyword {
@@ -10,14 +10,14 @@ interface MovieKeyword {
 
 // Props
 const props = defineProps<{
-  movie?: MovieDetails
+  movie?: AppendToResponse<MovieDetails, ['keywords', 'credits', 'videos'], 'movie'>
   tags?: MovieKeyword[]
 }>()
 
 // Emits
 const emit = defineEmits<{
   (e: 'play-trailer', movie: MovieDetails): void
-  (e: 'toggle-watchlist', payload: { movie: MovieDetails; inWatchlist: boolean }): void
+  (e: 'toggle-watchlist', payload: { id: number }): void
   (e: 'share', movie: MovieDetails): void
 }>()
 
@@ -77,7 +77,7 @@ const playTrailer = () => {
 const toggleWatchlist = () => {
   if (!movie.value || movie.value.id === 0) return
   inWatchlist.value = !inWatchlist.value
-  emit('toggle-watchlist', { movie: movie.value, inWatchlist: inWatchlist.value })
+  emit('toggle-watchlist', { id: movie.value.id })
 }
 
 const shareMovie = () => {
@@ -99,7 +99,7 @@ const genres = computed(() => movie.value.genres.map((g) => g.name).join(', ') |
     <h1 class="title">
       {{ movie.title }}
       <span class="year">({{ releaseYear }})</span>
-      <span class="rating"><i class="fas fa-star"></i> {{ movie.vote_average }}</span>
+      <span class="rating"><i class="fas fa-star"></i> {{ movie.vote_average.toFixed(1) }}</span>
     </h1>
 
     <div class="details">

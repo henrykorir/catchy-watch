@@ -1,9 +1,24 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { inject, onMounted, watch } from 'vue'
 import { AuthContext } from '../../types/auth'
 
 const auth = inject<AuthContext>('auth')
 if (!auth) throw new Error('Auth context not found')
+
+// Redirect if user is already logged in on mount
+onMounted(() => {
+  if (auth.user?.value && auth.guestSessionId) {
+    window.location.hash = '#/recommendation'
+  }
+})
+
+// Watch for user changes (login success) and redirect automatically
+watch(auth.user, (user) => {
+  if (user) {
+    window.location.hash = '#/recommendation'
+  }
+})
+
 const handleSubmit = () => {
   auth.mode.value === 'reset' ? auth.handleResetPassword() : auth.handleAuth(auth.mode.value)
 }

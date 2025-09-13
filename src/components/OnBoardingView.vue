@@ -1,4 +1,24 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { inject, onMounted, watch } from 'vue'
+import { AuthContext } from '../types/auth'
+import SearchBarWrapper from './common/SearchBarWrapper.vue'
+const auth = inject<AuthContext>('auth')
+if (!auth) throw new Error('Auth context not found')
+
+// Redirect if user is already logged in on mount
+onMounted(() => {
+  if (auth.user?.value) {
+    window.location.hash = '#/recommendation'
+  }
+})
+
+// Watch for user changes (login success) and redirect automatically
+watch(auth.user.value, (user) => {
+  if (user.role === 'authenticated') {
+    window.location.hash = '#/recommendation'
+  }
+})
+</script>
 
 <template>
   <div
@@ -9,6 +29,9 @@
       :style="{ /* background: 'linear-gradient(135deg, #6e8efb, #a777e3)',*/ padding: '15px 0' }"
     >
       <span>CatchyWatch</span>
+      <div class="flex z-100">
+        <SearchBarWrapper />
+      </div>
       <span><i class="fa-solid fa-bars"></i></span>
     </div>
     <div class="fixed inset-0 flex items-center justify-center">

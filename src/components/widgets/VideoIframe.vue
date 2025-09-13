@@ -11,7 +11,7 @@ const props = defineProps<Props>()
 const emit = defineEmits(['close'])
 
 const embedUrl = computed(
-  () => `https://www.youtube.com/embed/${props.videoId}?autoplay=1&modestbranding=1&fs=1&rel=0`,
+  () => `https://www.youtube.com/embed/${props.videoId}?autoplay=0&modestbranding=1&fs=1&rel=0`,
 )
 
 function closePopup() {
@@ -31,7 +31,11 @@ function closePopup() {
           {{ props.title || 'Play Trailer' }}
         </span>
         <div class="player-window-titlebar-actions">
-          <button class="player-window-titlebar-action" aria-label="Close" @click="closePopup">
+          <button
+            class="player-window-titlebar-action cursor-pointer;"
+            aria-label="Close"
+            @click="closePopup"
+          >
             ✕
           </button>
         </div>
