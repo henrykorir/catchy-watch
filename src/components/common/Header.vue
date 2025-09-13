@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import SearchBar from './SearchBar.vue'
-
-const searchQuery = ref<string>('')
-
-const handleSearch = () => {
-  window.location.hash = '#/search?query=' + searchQuery.value
-  searchQuery.value = ''
-}
+import SearchBarWrapper from './SearchBarWrapper.vue'
 </script>
 
 <template>
@@ -15,7 +7,7 @@ const handleSearch = () => {
     <div class="container">
       <div class="header-content">
         <div class="logo">CatchyWatch</div>
-        <SearchBar v-model="searchQuery" @search="handleSearch" />
+        <SearchBarWrapper />
         <div class="user-actions">
           <i class="fas fa-bell cursor-pointer"></i>
         </div>

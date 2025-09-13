@@ -142,8 +142,7 @@ const handleMovieSelect = (movieId: number) => {
 
 const handleSettingsOptionClick = async (option: string) => {
   alert(`Settings option clicked: ${option}`)
-  if(option === 'Logout')
-  await supabase.auth.signOut()
+  if (option === 'Logout') await supabase.auth.signOut()
 }
 
 const handleNotificationClick = (notificationId: number) => {

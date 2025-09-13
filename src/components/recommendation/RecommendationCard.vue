@@ -37,7 +37,7 @@ const posterUrl = getFullImagePath(
       <h3 class="card-title">{{ item.title }}</h3>
       <p class="card-desc">{{ item.overview }}</p>
       <div class="card-meta">
-        <div class="rating"><i class="fas fa-star"></i> {{ item.vote_average }}</div>
+        <div class="rating"><i class="fas fa-star"></i> {{ item.vote_average.toFixed(1) }}</div>
         <div class="price">
           {{
             dayjs(item.release_date)

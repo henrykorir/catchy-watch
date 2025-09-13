@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue"
-import tmdb from "../lib/tmdb-auth"
-import { Movie, Search } from "@tdanks2000/tmdb-wrapper"
+import { onMounted, ref, watch } from 'vue'
+import tmdb from '../lib/tmdb-auth'
+import { Movie, Search } from '@tdanks2000/tmdb-wrapper'
+import dayjs from 'dayjs';
 
 const props = defineProps<{
   queryParams: URLSearchParams
 }>()
 
-const query = ref(props.queryParams.get("query") || "")
+const query = ref(props.queryParams.get('query') || '')
 const loading = ref(false)
-const error = ref("")
+const error = ref('')
 const results = ref<Search<Movie>>({
   page: 0,
   results: [],
@@ -21,20 +22,20 @@ const results = ref<Search<Movie>>({
 watch(
   () => props.queryParams,
   (newParams) => {
-    query.value = newParams.get("query") || ""
+    query.value = newParams.get('query') || ''
     fetchResults()
   },
-  { deep: true }
+  { deep: true },
 )
 
 async function fetchResults() {
   if (!query.value) return
   loading.value = true
-  error.value = ""
+  error.value = ''
   try {
     results.value = await tmdb.search.movies({ query: query.value })
   } catch (err: any) {
-    error.value = "Failed to fetch results."
+    error.value = 'Failed to fetch results.'
     console.error(err)
   } finally {
     loading.value = false
@@ -45,13 +46,15 @@ onMounted(fetchResults)
 
 // Helpers
 function posterUrl(item: Movie) {
-  return item.poster_path
-    ? `https://image.tmdb.org/t/p/w185${item.poster_path}`
-    : "no-poster.svg"
+  return item.poster_path ? `https://image.tmdb.org/t/p/w185${item.poster_path}` : 'no-poster.svg'
 }
 
 function displayTitle(item: Movie) {
   return item.title
+}
+
+function onViewMovieDetails(movie_id: number){
+  window.location.hash = '#/movie/' + movie_id
 }
 </script>
 
@@ -59,7 +62,8 @@ function displayTitle(item: Movie) {
   <div class="content p-4">
     <!-- Heading -->
     <h2 class="text-lg font-semibold mb-4">
-      Results for "<span class="text-red-500">{{ query }}</span>"
+      Results for "<span class="text-red-500">{{ query }}</span
+      >"
     </h2>
 
     <!-- Loading -->
@@ -74,11 +78,11 @@ function displayTitle(item: Movie) {
     </div>
 
     <!-- List View -->
-    <ul v-else class="space-y-4">
+    <ul v-else class="space-y-6">
       <li
         v-for="item in results.results"
         :key="item.id + '-' + 'movie'"
-        class="flex gap-4 bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden"
+        class="flex gap-4 bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden cursor-pointer" @click="onViewMovieDetails(item.id)"
       >
         <img
           :src="posterUrl(item)"
@@ -90,10 +94,10 @@ function displayTitle(item: Movie) {
             {{ displayTitle(item) }}
           </h3>
           <p class="text-xs text-gray-500 capitalize mb-1">
-            {{ 'Movie' }}
+            {{ dayjs(item.release_date).year() }}
           </p>
           <p class="text-sm text-gray-600 line-clamp-2">
-            {{ item.overview || "No description available." }}
+            {{ item.overview || 'No description available.' }}
           </p>
         </div>
       </li>
