@@ -56,7 +56,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 <template>
   <nav
-  class="fixed bottom-0 left-0 right-0 bg-white flex justify-around shadow-[0_-2px_10px_rgba(0,0,0,0.1)] py-2"
+  class="fixed bottom-0 left-0 right-0 bg-white flex justify-around shadow-[0_-2px_10px_rgba(0,0,0,0.1)] bottom-nav"
 >
   <div v-for="(nav, index) in navigation" :key="index" class="relative nav-item-wrapper">
     <!-- Nav Item -->
