@@ -3,9 +3,12 @@ import TopNav from './account/TopNav.vue'
 import WatchlistSection from './account/WatchlistSection.vue'
 import SettingsPanel from './account/SettingsPanel.vue'
 import NotificationsPanel from './account/NotificationsPanel.vue'
-import { ref } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 import { supabase } from '../lib/supabase-auth'
 
+import { AuthContext } from '../types/auth'
+import { MovieDetails } from '@tdanks2000/tmdb-wrapper'
+const auth = inject<AuthContext>('auth')
 // Reactive data
 const activeNavItem = ref('watchlist')
 const user = ref({
@@ -21,85 +24,6 @@ const navItems = ref([
   { id: 'notifications', icon: 'fas fa-bell', label: 'Notifications', badgeCount: 3 },
 ])
 
-const watchlistMovies = ref([
-  {
-    id: 1,
-    title: 'Inception',
-    year: 2010,
-    rating: 8.8,
-    poster: 'https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg',
-  },
-  {
-    id: 2,
-    title: 'The Dark Knight',
-    year: 2008,
-    rating: 9.0,
-    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-  },
-  {
-    id: 3,
-    title: 'Interstellar',
-    year: 2014,
-    rating: 8.6,
-    poster: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-  },
-  {
-    id: 4,
-    title: 'Pulp Fiction',
-    year: 1994,
-    rating: 8.9,
-    poster: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
-  },
-  {
-    id: 5,
-    title: 'Pulp Fiction',
-    year: 1994,
-    rating: 8.9,
-    poster: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
-  },
-  {
-    id: 6,
-    title: 'The Dark Knight',
-    year: 2008,
-    rating: 9.0,
-    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-  },
-  {
-    id: 2,
-    title: 'The Dark Knight',
-    year: 2008,
-    rating: 9.0,
-    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-  },
-  {
-    id: 3,
-    title: 'Interstellar',
-    year: 2014,
-    rating: 8.6,
-    poster: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-  },
-  {
-    id: 4,
-    title: 'Pulp Fiction',
-    year: 1994,
-    rating: 8.9,
-    poster: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
-  },
-  {
-    id: 5,
-    title: 'Pulp Fiction',
-    year: 1994,
-    rating: 8.9,
-    poster: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
-  },
-  {
-    id: 6,
-    title: 'The Dark Knight',
-    year: 2008,
-    rating: 9.0,
-    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-  },
-])
 
 const settingsOptions = ref([
   { id: 1, icon: 'fas fa-user', label: 'Account Settings' },
@@ -123,6 +47,47 @@ const notifications = ref([
   { id: 3, message: 'Weekly recommendations are ready', time: '2 days ago', read: true },
 ])
 
+const watchlist = ref<{ id: string; user_id: string; movie_id: number; added_at: string }[]>([])
+const movies = ref<MovieDetails[]>([])
+
+onMounted(async () => {
+  const uid = auth?.user.value?.id
+  if (!uid) {
+    console.warn('No authenticated user found')
+    return
+  }
+
+  // 1. Get watchlist rows
+  const { data, error } = await supabase.from('watchlist').select('*').eq('user_id', uid)
+
+  if (error) {
+    console.error('Error fetching watchlist:', error.message)
+    return
+  }
+
+  watchlist.value = data ?? []
+
+  // 2. Extract movie_ids
+  const movieIds = watchlist.value.map((item) => item.movie_id)
+
+  // 3. Fetch movie details in parallel
+  const apiKey = import.meta.env.VITE_TMDB_API_KEY
+  const requests = movieIds.map((id) =>
+    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`).then((res) => res.json()),
+  )
+
+  movies.value = await Promise.all(requests)
+
+  console.log('Watchlist movies:', movies.value)
+})
+watch(
+  () => auth?.user.value,
+  (newUser) => {
+    if (!newUser) window.location.hash = '#/recommendation'
+  },
+  { immediate: true },
+)
+
 // Methods
 const handleAvatarClick = () => {
   alert('Avatar clicked! This would open a profile page.')
@@ -133,16 +98,16 @@ const handleNavItemClick = (item: string) => {
 }
 
 const handleViewAllWatchlist = () => {
-  alert('View all watchlist clicked!')
+  // alert('View all watchlist clicked!')
 }
 
 const handleMovieSelect = (movieId: number) => {
-  alert(`Movie selected with ID: ${movieId}`)
+  window.location.hash = '#/movie/' + `${movieId}`
 }
 
 const handleSettingsOptionClick = async (option: string) => {
-  alert(`Settings option clicked: ${option}`)
-  if (option === 'Logout') await supabase.auth.signOut()
+  // alert(`Settings option clicked: ${option}`)
+  if (option === 'Logout') auth?.handleAuth('signout')
 }
 
 const handleNotificationClick = (notificationId: number) => {
@@ -163,7 +128,7 @@ const handleNotificationClick = (notificationId: number) => {
     <div class="content-section">
       <WatchlistSection
         v-if="activeNavItem === 'watchlist'"
-        :movies="watchlistMovies"
+        :movies="movies"
         @view-all="handleViewAllWatchlist"
         @movie-selected="handleMovieSelect"
       />

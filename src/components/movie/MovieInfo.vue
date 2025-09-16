@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, inject } from 'vue'
 import type { AppendToResponse, MovieDetails } from '@tdanks2000/tmdb-wrapper'
 import dayjs from 'dayjs'
+import { AuthContext } from '../../types/auth'
 
 interface MovieKeyword {
   id: number
   name: string
 }
+const auth = inject<AuthContext>('auth')
 
 // Props
 const props = defineProps<{
@@ -17,39 +19,20 @@ const props = defineProps<{
 // Emits
 const emit = defineEmits<{
   (e: 'play-trailer', movie: MovieDetails): void
-  (e: 'toggle-watchlist', payload: { id: number }): void
+  (e: 'toggle-watchlist', id: number): void
   (e: 'share', movie: MovieDetails): void
 }>()
 
 // Reactive state
-const movie = ref<MovieDetails>({
-  id: 0,
-  title: 'Loading...',
-  release_date: '',
-  runtime: 0,
-  vote_average: 0,
-  adult: false,
-  genres: [],
-  overview: '',
-  backdrop_path: '',
-  budget: 0,
-  homepage: '',
-  imdb_id: '',
-  original_language: '',
-  original_title: '',
-  popularity: 0,
-  production_companies: [],
-  production_countries: [],
-  revenue: 0,
-  spoken_languages: [],
-  status: '',
-  tagline: '',
-  video: false,
-  vote_count: 0,
-})
+const movie = ref<AppendToResponse<
+  MovieDetails,
+  ['keywords', 'credits', 'videos'],
+  'movie'
+> | null>()
 
 const movieTags = ref<MovieKeyword[]>([])
-const inWatchlist = ref(false)
+const inWatchlist = ref<boolean>(false)
+const showPopup = ref<boolean>(false)
 
 // Watch props for changes and safely update refs
 watch(
@@ -76,8 +59,18 @@ const playTrailer = () => {
 
 const toggleWatchlist = () => {
   if (!movie.value || movie.value.id === 0) return
-  inWatchlist.value = !inWatchlist.value
-  emit('toggle-watchlist', { id: movie.value.id })
+
+  const isLoggedIn = auth?.user.value !== null
+  const hasValidGuestSession =
+    !!auth?.guestSessionId && dayjs(auth.guestSessionExpiry).isAfter(dayjs())
+
+  if (isLoggedIn || hasValidGuestSession) {
+    inWatchlist.value = !inWatchlist.value
+    emit('toggle-watchlist', movie.value.id)
+  } else {
+    showPopup.value = true
+    setTimeout(() => (showPopup.value = false), 4000) // auto-hide after 3s
+  }
 }
 
 const shareMovie = () => {
@@ -90,24 +83,26 @@ const watchlistIcon = computed(() => (inWatchlist.value ? 'fas fa-check' : 'fas 
 const watchlistText = computed(() =>
   inWatchlist.value ? 'Added to Watchlist' : 'Add to Watchlist',
 )
-const releaseYear = computed(() => movie.value.release_date?.split('-')[0] ?? 'N/A')
-const genres = computed(() => movie.value.genres.map((g) => g.name).join(', ') || 'N/A')
+const releaseYear = computed(() => movie.value?.release_date?.split('-')[0] ?? 'N/A')
+const genres = computed(() => movie.value?.genres.map((g) => g.name).join(', ') || 'N/A')
+
+console.log('movie-detail: ', movie.value)
 </script>
 
 <template>
   <div class="movie-info">
     <h1 class="title">
-      {{ movie.title }}
+      {{ movie?.title }}
       <span class="year">({{ releaseYear }})</span>
-      <span class="rating"><i class="fas fa-star"></i> {{ movie.vote_average.toFixed(1) }}</span>
+      <span class="rating"><i class="fas fa-star"></i> {{ movie?.vote_average.toFixed(1) }}</span>
     </h1>
 
     <div class="details">
-      <div class="detail-item"><i class="far fa-clock"></i> {{ movie.runtime }} min</div>
+      <div class="detail-item"><i class="far fa-clock"></i> {{ movie?.runtime }} min</div>
       <div class="detail-item">
         <i class="far fa-calendar-alt"></i>
         {{
-          dayjs(movie.release_date)
+          dayjs(movie?.release_date)
             .format('DD MMMM, YYYY')
             .toLowerCase()
             .replace(/\b\w/g, (char) => char.toUpperCase())
@@ -120,15 +115,31 @@ const genres = computed(() => movie.value.genres.map((g) => g.name).join(', ') |
       <span v-for="tag in movieTags" :key="tag.id" class="tag">{{ tag.name }}</span>
     </div>
 
-    <p class="description">{{ movie.overview || 'No description available.' }}</p>
+    <p class="description">{{ movie?.overview || 'No description available.' }}</p>
 
     <div class="action-buttons">
-      <button class="btn btn-primary" @click="playTrailer">
+      <button
+        v-if="(movie?.videos.results || []).length > 0"
+        class="btn btn-primary"
+        @click="playTrailer"
+      >
         <i class="fas fa-play"></i> Watch Trailer
       </button>
-      <button class="btn btn-secondary" @click="toggleWatchlist">
-        <i :class="watchlistIcon"></i> {{ watchlistText }}
-      </button>
+      <div>
+        <div class="popup">
+          <button class="btn btn-secondary" @click="toggleWatchlist">
+            <i :class="watchlistIcon"></i> {{ watchlistText }}
+          </button>
+          <span
+            id="myPopup"
+            role="tooltip"
+            aria-live="polite"
+            :class="['popuptext', { show: showPopup }]"
+          >
+            <a href="#/auth" class="text-blue-400">Login</a> to add watchlist
+          </span>
+        </div>
+      </div>
       <button class="btn btn-secondary" @click="shareMovie">
         <i class="fas fa-share-alt"></i> Share
       </button>
@@ -182,5 +193,70 @@ const genres = computed(() => movie.value.genres.map((g) => g.name).join(', ') |
 .btn-secondary {
   background: #6c757d;
   color: white;
+}
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 100%;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 2px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+.popup .popuptext a {
+  color: rgb(0, 132, 255);
+}
+/* Popup arrow */
+.popup .popuptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

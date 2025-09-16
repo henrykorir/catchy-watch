@@ -1,16 +1,20 @@
 <script setup lang="ts">
+import { getFullImagePath, ImageFormats, ImageSizes, MovieDetails } from '@tdanks2000/tmdb-wrapper'
+import dayjs from 'dayjs'
+import { computed } from 'vue'
+
 // Define movie interface for TypeScript
-interface Movie {
-  id: number
-  title: string
-  year: number
-  rating?: number
-  poster: string
-}
+// interface Movie {
+//   id: number
+//   title: string
+//   year: number
+//   rating?: number
+//   poster: string
+// }
 
 // Define props with TypeScript
 const props = defineProps<{
-  movie: Movie
+  movie: MovieDetails
 }>()
 
 // Define emits
@@ -22,17 +26,27 @@ const emit = defineEmits<{
 const handleClick = () => {
   emit('movie-selected', props.movie.id)
 }
+const posterUrl = computed(() =>
+  props.movie.poster_path
+    ? getFullImagePath(
+        'https://image.tmdb.org/t/p/',
+        ImageSizes.W500,
+        props.movie.poster_path,
+        ImageFormats.JPG,
+      )
+    : 'no-poster.svg',
+)
 </script>
 
 <template>
   <div class="movie-card" @click="handleClick">
-    <img :src="movie.poster" :alt="movie.title + ' Poster'" class="movie-poster" />
+    <img :src="posterUrl" :alt="movie.title + ' Poster'" class="movie-poster" />
     <div class="movie-content">
       <h3 class="movie-title">{{ movie.title }}</h3>
-      <div class="movie-year">{{ movie.year }}</div>
-      <div v-if="movie.rating" class="movie-rating">
+      <div class="movie-year">{{ dayjs(movie.release_date).year() }}</div>
+      <div v-if="movie.vote_average" class="movie-rating">
         <i class="fas fa-star"></i>
-        <span>{{ movie.rating }}</span>
+        <span>{{ movie.vote_average.toFixed(1) }}</span>
       </div>
     </div>
   </div>

@@ -12,7 +12,7 @@ const touchedCard = ref<number | null>(null)
 // const loading = ref(true)
 
 const filters = ref(['All', 'Popular', 'Trending', 'New', 'Top Rated', 'For You', 'Nearby'])
-
+const location = ref<any>(null)
 // Methods
 function setActiveFilter(filter: string) {
   activeFilter.value = filter
@@ -35,7 +35,7 @@ const filterToApi: Record<string, () => Promise<MovieDiscoverResult>> = {
   New: () => tmdb.movies.nowPlaying(),
   'Top Rated': () => tmdb.movies.topRated(),
   'For You': () => tmdb.discover.movie({ with_genres: '18' }),
-  Nearby: () => tmdb.discover.movie({ region: 'KE' }),
+  Nearby: () => tmdb.discover.movie({ region: location.value.countryCode }),
   All: () => tmdb.discover.movie(),
 }
 
@@ -50,9 +50,21 @@ watch(activeFilter, () => {
 })
 
 // initial fetch
-onMounted(() => {
-  api.execute()
+onMounted(async () => {
+  try {
+    api.execute()
+    const res = await fetch('https://api.db-ip.com/v2/free/self')
+    if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
+
+    const data = await res.json()
+    location.value = data
+    console.log('loci:', data)
+  } catch (error) {
+    console.error('error:', error)
+  }
 })
+
+console.log('recom: ', api.data)
 </script>
 
 <template>

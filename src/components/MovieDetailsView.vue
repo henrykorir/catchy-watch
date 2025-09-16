@@ -32,7 +32,7 @@ const show = ref(false)
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 
-defineProps<{ id: number }>()
+defineProps<{ id: number | string }>()
 const auth = inject<AuthContext>('auth')
 
 // ---------------- Utilities ----------------
@@ -137,17 +137,11 @@ const loadMovie = async (id: number | string) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-const onToggleWatchList = async (payload: { id: number }) => {
+const onToggleWatchList = async (id: number) => {
   if (!auth) throw new Error('Auth context not found')
 
-  const movie_id = payload.id || selectedMovieDetails.value?.id
+  const movie_id = id || selectedMovieDetails.value?.id
   if (!movie_id) return
-
-  // Ensure the user is signed in
-  if (!auth.user) {
-    alert('Login to add watchlist')
-    return
-  }
 
   try {
     // Check if the movie is already in the user's watchlist

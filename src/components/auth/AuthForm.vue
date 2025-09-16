@@ -25,7 +25,9 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div class="container">
+  <div
+    class="min-h-screen min-w-full flex items-center justify-center container overflow-hidden border-box"
+  >
     <div class="auth-container">
       <div class="auth-header">
         <h2>

@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import tmdb from '../lib/tmdb-auth'
 import { Movie, Search } from '@tdanks2000/tmdb-wrapper'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
 const props = defineProps<{
   queryParams: URLSearchParams
@@ -53,7 +53,7 @@ function displayTitle(item: Movie) {
   return item.title
 }
 
-function onViewMovieDetails(movie_id: number){
+function onViewMovieDetails(movie_id: number) {
   window.location.hash = '#/movie/' + movie_id
 }
 </script>
@@ -82,7 +82,8 @@ function onViewMovieDetails(movie_id: number){
       <li
         v-for="item in results.results"
         :key="item.id + '-' + 'movie'"
-        class="flex gap-4 bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden cursor-pointer" @click="onViewMovieDetails(item.id)"
+        class="flex gap-6 bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden cursor-pointer"
+        @click="onViewMovieDetails(item.id)"
       >
         <img
           :src="posterUrl(item)"

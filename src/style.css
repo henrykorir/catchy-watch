@@ -16,7 +16,7 @@
   }
 
   body {
-    @apply min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] font-sans antialiased;
+    @apply min-h-full bg-[var(--bg-color)] text-[var(--text-color)] font-sans antialiased;
   }
 
   h1 {
