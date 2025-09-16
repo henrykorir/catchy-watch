@@ -19,7 +19,6 @@ const user = ref<any>(null)
 const session = ref<any>(null)
 const guestSessionId = ref<string | null>(null)
 const guestSessionExpiry = ref<string | null>(null)
-const inputRef = ref(null)
 
 // Reset form
 function resetForm() {
