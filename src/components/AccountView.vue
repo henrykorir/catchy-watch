@@ -181,7 +181,7 @@ const handleViewAllWatchlist = () => {
 }
 
 const handleMovieSelect = (movieId: number) => {
- window.location.hash = '#/movie/'+ `${movieId}`
+  window.location.hash = '#/movie/' + `${movieId}`
 }
 
 const handleSettingsOptionClick = async (option: string) => {
