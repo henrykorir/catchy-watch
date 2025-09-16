@@ -19,6 +19,7 @@ const user = ref<any>(null)
 const session = ref<any>(null)
 const guestSessionId = ref<string | null>(null)
 const guestSessionExpiry = ref<string | null>(null)
+const inputRef = ref(null)
 
 // Reset form
 function resetForm() {
@@ -53,7 +54,7 @@ async function createGuestSession() {
 }
 
 // Handle signin / signup
-async function handleAuth(action: 'signin' | 'signup') {
+async function handleAuth(action: 'signin' | 'signup' | 'signout') {
   errorMessage.value = ''
   successMessage.value = ''
   try {
@@ -66,7 +67,7 @@ async function handleAuth(action: 'signin' | 'signup') {
       session.value = data.session
       user.value = data.user
       await createGuestSession()
-    } else {
+    } else if (action === 'signup') {
       const { data, error } = await supabase.auth.signUp({
         email: email.value,
         password: password.value,
@@ -75,6 +76,15 @@ async function handleAuth(action: 'signin' | 'signup') {
       session.value = data.session
       user.value = data.user
       await createGuestSession()
+    } else {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      resetForm()
+      user.value = null
+      session.value = null
+      guestSessionId.value = null
+      guestSessionExpiry.value = null
+      window.location.hash = '#/recommendation'
     }
     resetForm()
   } catch (err: any) {

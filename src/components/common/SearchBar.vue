@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { inject, Ref } from 'vue'
 
 defineProps<{
   modelValue: string
 }>()
+
+const inputRef = inject<Ref<HTMLInputElement | null>>('inputRef')
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
@@ -18,21 +20,39 @@ const onInput = (event: Event) => {
 
 <template>
   <div class="search-bar">
+    <!-- Overlay (non-blocking) -->
+    <div class="search__overlay"></div>
+
+    <!-- Search input -->
     <input
+      ref="inputRef"
       type="text"
       placeholder="Search by title or keyword..."
       :value="modelValue"
       @input="onInput"
       @keyup.enter="emit('search')"
     />
+
+    <!-- Search button -->
     <button class="flex justify-center items-center" @click="emit('search')">
       <i class="fas fa-search"></i>
     </button>
   </div>
 </template>
 
-/*
 <style scoped>
+.search__overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 11;
+  pointer-events: none;
+}
+
 .search-bar {
   display: flex;
   justify-content: center;
@@ -44,10 +64,12 @@ const onInput = (event: Event) => {
     flex-grow 0.3s ease,
     box-shadow 0.3s ease,
     transform 0.3s ease;
-  flex: 1; /* allow flexible growth inside header */
-  min-width: 200px; /* avoids collapsing too much */
-  max-width: 600px; /* cap for large screens */
+  flex: 1;
+  min-width: 200px;
+  max-width: 600px;
   height: 2rem;
+  position: relative; /* ensures z-index works */
+  z-index: 20; /* ✅ stays above overlay */
 }
 
 .search-bar:focus-within {
@@ -55,7 +77,6 @@ const onInput = (event: Event) => {
   left: 0;
   right: 0;
   width: 100%;
-  /* flex: 2; /* expand more space in header */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   transform: scale(1.02);
   z-index: 1000;
@@ -86,6 +107,7 @@ const onInput = (event: Event) => {
 .search-bar button:hover {
   background: #ff4c4c;
 }
+
 @media (min-width: 768px) {
   .search-bar:focus-within {
     position: inherit;

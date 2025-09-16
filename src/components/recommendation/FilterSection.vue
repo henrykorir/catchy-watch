@@ -12,8 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
-
 // Props
 defineProps<{
   filters: string[]

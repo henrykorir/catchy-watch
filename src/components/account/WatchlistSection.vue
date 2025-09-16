@@ -1,19 +1,20 @@
 <script setup lang="ts">
+import { MovieDetails } from '@tdanks2000/tmdb-wrapper'
 import MovieCard from './MovieCard.vue'
 
 // Define movie interface for TypeScript
-interface Movie {
-  id: number
-  title: string
-  year: number
-  rating?: number
-  poster: string
-}
+// interface Movie {
+//   id: number
+//   title: string
+//   year: number
+//   rating?: number
+//   poster: string
+// }
 
 // Define props with TypeScript
 defineProps<{
   title?: string
-  movies: Movie[]
+  movies: MovieDetails[]
 }>()
 
 // Define emits
