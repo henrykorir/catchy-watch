@@ -1,18 +1,64 @@
-# Vue 3 + TypeScript + Vite
+# Catchy Watch 🎬
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Catchy Watch is a modern movie discovery web application built with **Vue 3** and **Vite**. It allows users to browse movies, view details, watch trailers, manage a watchlist, and explore recommendations seamlessly.
 
-## Recommended IDE Setup
+Live Demo: [https://catchy-watch.netlify.app](https://catchy-watch.netlify.app)
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+---
 
-## Type Support For `.vue` Imports in TS
+## Table of Contents
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+- [Features](#features)  
+- [Tech Stack](#tech-stack)  
+- [Screenshots](#screenshots)  
+- [Installation](#installation)  
+- [Usage](#usage)  
+- [Project Structure](#project-structure)  
+- [Environment Variables](#environment-variables)  
+- [Contributing](#contributing)  
+- [License](#license)  
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+---
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+## Features
+
+- Browse trending and popular movies  
+- Search movies by title  
+- View movie details, including cast, keywords, and trailers  
+- See similar movies and recommendations  
+- Add or remove movies from a personal watchlist (powered by Supabase)  
+- Pagination support for large datasets  
+- Responsive design for desktop and mobile  
+- Smooth navigation using Vue Router  
+- Error handling for API failures  
+
+---
+
+## Tech Stack
+
+- **Frontend:** Vue 3, Vite  
+- **State Management:** Composition API + Reactive `ref` / `computed`  
+- **Routing:** Vue Router 4  
+- **API:** [TMDB API](https://www.themoviedb.org/)  
+- **Database / Auth:** Supabase (watchlist management & user authentication)  
+- **Styling:** Tailwind CSS  
+- **Testing:** Cypress (component and e2e tests)  
+- **Utilities:** Day.js for date formatting, Axios / Fetch API for requests  
+
+---
+
+## Screenshots
+
+![Home Page](screenshots/home.png)  
+![Movie Details](screenshots/movie-details.png)  
+![Watchlist](screenshots/watchlist.png)  
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/henrykorir/catchy-watch.git
+cd catchy-watch
