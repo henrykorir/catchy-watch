@@ -2,7 +2,7 @@
 
 Catchy Watch is a modern movie discovery web application built with **Vue 3** and **Vite**. It allows users to browse movies, view details, watch trailers, manage a watchlist, and explore recommendations seamlessly.
 
-Live Demo: [https://catchy-watch.netlify.app](https://catchy-watch.netlify.app)
+Live Demo:  [https://catchy-watch.vercel.app/](https://catchy-watch.vercel.app/)
 
 ---
 
