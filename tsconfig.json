@@ -18,8 +18,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["cypress"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "cypress.d.ts"],
+  // "exclude": [
+  //   "node_modules",
+  //   "cypress",
+  //   "**/*.cy.ts",
+  //   "**/*.cy.tsx"
+  // ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

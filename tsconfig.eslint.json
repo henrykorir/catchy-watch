@@ -1,10 +1,12 @@
 {
-    "extends": "./tsconfig.json",
-    "include": [
-      "src",
-      "cypress",
-      "cypress.d.ts",
-      "**/*.vue"
-    ]
-  }
-  
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "cypress.d.ts",
+    "cypress/**/*.ts",
+    "cypress/**/*.tsx",
+    "env.d.ts"
+  ]
+}

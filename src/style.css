@@ -1,79 +1,258 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import 'tailwindcss';
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* 1. Theme Variables */
+@layer base {
+  :root {
+    --primary: #e50914;
+    --secondary: #0071eb;
+    --dark: #141414;
+    --dark-light: #1f1f1f;
+    --light: #f5f5f5;
+    --gray: #808080;
+    --card-bg: rgba(20, 20, 20, 0.8);
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --line-height: 1.6;
+  }
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    @apply min-h-full bg-[var(--bg-color)] text-[var(--text-color)] font-sans antialiased;
+  }
+
+  h1 {
+    @apply text-[3.2em] leading-tight font-bold;
+  }
+
+  a {
+    @apply font-medium text-indigo-500 no-underline;
+  }
+  a:hover {
+    @apply text-indigo-400;
+  }
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* 2. Components */
+@layer components {
+  .btn {
+    @apply rounded-lg border border-transparent px-4 py-2 text-base font-medium 
+           bg-neutral-900 text-white cursor-pointer transition-colors;
+  }
+  .btn:hover {
+    @apply border-indigo-500;
+  }
+  .btn:focus-visible {
+    @apply outline outline-4 outline-indigo-500;
+  }
+
+  .card {
+    @apply p-8 bg-neutral-800 rounded-xl shadow-md;
+  }
+
+  #app {
+    @apply w-full max-w-screen-xl mx-auto p-8;
+  }
+
+  /* Avatar */
+  .avatar-section {
+    @apply flex items-center gap-4;
+  }
+  .avatar {
+    @apply w-[50px] h-[50px] rounded-full overflow-hidden border-2 cursor-pointer transition-transform;
+    border-color: var(--primary);
+  }
+  .avatar:hover {
+    @apply scale-105;
+  }
+  .user-info {
+    @apply flex flex-col;
+  }
+  .user-name {
+    @apply font-semibold text-lg;
+  }
+  .user-status {
+    @apply text-sm text-[var(--gray)];
+  }
+
+  /* Nav Items */
+  .nav-item {
+    @apply flex items-center gap-2 px-5 py-3 rounded-lg cursor-pointer relative transition-all;
+  }
+  .nav-item:hover {
+    @apply bg-white/10;
+  }
+  .nav-item.active {
+    @apply bg-[var(--primary)] text-white;
+  }
+  .badge {
+    @apply absolute -top-1 -right-1 flex items-center justify-center w-[18px] h-[18px] rounded-full text-xs text-white;
+    background-color: var(--primary);
+  }
+
+  /* Top Navigation */
+  .top-nav {
+    @apply /*bg-[var(--dark-light)]*/ p-4 rounded-xl mb-8 flex justify-between items-center shadow-md gap-8;
+  }
+  .nav-items {
+    @apply flex items-center gap-6;
+  }
+
+  /* Movie Card */
+  .movie-card {
+    @apply bg-[var(--card-bg)] rounded-lg overflow-hidden cursor-pointer transition-transform duration-300;
+  }
+  .movie-card:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+  .movie-poster {
+    @apply w-full h-[200px] object-cover;
+  }
+  .movie-content {
+    @apply p-3;
+  }
+  .movie-title {
+    @apply font-semibold text-sm mb-1 truncate;
+  }
+  .movie-year {
+    @apply text-[var(--gray)] text-xs mb-1;
+  }
+  .movie-rating {
+    @apply flex items-center text-yellow-400 font-semibold text-xs;
+  }
+
+  /* Watchlist Section */
+  .watchlist-section {
+    @apply /* bg-[var(--dark-light)] */ rounded-xl p-6 shadow-md;
+  }
+  .section-header {
+    @apply flex justify-between items-center mb-6;
+  }
+  .section-title {
+    @apply text-xl font-semibold;
+  }
+  .view-all {
+    @apply text-[var(--primary)] text-sm cursor-pointer;
+  }
+  .movies-grid {
+    @apply grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))];
+  }
+
+  /* Settings */
+  .settings-option {
+    @apply flex items-center gap-3 p-4 rounded-lg mb-3 cursor-pointer transition-colors;
+  }
+  .settings-option:hover {
+    @apply bg-white/10;
+  }
+  .settings-option i {
+    @apply w-5 text-[var(--primary)];
+  }
+  .settings-panel {
+    @apply /* bg-[var(--dark-light)] */ rounded-xl p-6 shadow-md;
+  }
+
+  /* Notifications */
+  .notifications-panel {
+    @apply /* bg-[var(--dark-light)] */ rounded-xl p-6 shadow-md;
+  }
+  .notification {
+    @apply flex items-center p-4 rounded-lg mb-3 cursor-pointer transition-colors relative;
+  }
+  .notification:hover {
+    @apply bg-white/10;
+  }
+  .notification.unread {
+    @apply bg-[rgba(229,9,20,0.1)];
+  }
+  .notification-content {
+    @apply flex-1;
+  }
+  .notification-message {
+    @apply mb-1 leading-relaxed;
+  }
+  .notification-time {
+    @apply text-xs text-[var(--gray)];
+  }
+  .notification-indicator {
+    @apply w-2 h-2 rounded-full bg-[var(--primary)] ml-2;
+  }
+  .empty-state {
+    @apply text-center p-8 text-[var(--gray)];
+  }
+  .empty-state i {
+    @apply text-2xl mb-4 block;
+  }
+
+  /* Content Layout */
+  .content-section {
+    @apply grid gap-8 grid-cols-[1fr_300px];
+  }
 }
-a:hover {
-  color: #535bf2;
+
+/* 3. Responsive Utilities */
+@layer utilities {
+  @media (max-width: 900px) {
+    .top-nav {
+      @apply flex-col gap-4;
+    }
+    .nav-items {
+      @apply w-full justify-around;
+    }
+    .content-section {
+      @apply grid-cols-1;
+    }
+  }
+  @media (max-width: 600px) {
+    .nav-items {
+      @apply flex-col gap-2 w-full;
+    }
+    .nav-item {
+      @apply w-full justify-center;
+    }
+    .movies-grid {
+      @apply grid-cols-2;
+    }
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.card {
-  padding: 2em;
+  background-color: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 80px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.container {
+  max-width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
   }
-  a:hover {
-    color: #747bff;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
   }
 }
