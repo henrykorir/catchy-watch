@@ -1,87 +1,162 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watchEffect, onUnmounted } from 'vue'
 import FilterSection from './recommendation/FilterSection.vue'
 import RecommendationList from './recommendation/RecommendationList.vue'
+import PaginationBar from './common/PaginationBar.vue'
+
 import { useApi } from '../composables/useApi'
 import tmdb from '../lib/tmdb-auth'
-import { MovieDiscoverResult } from '@tdanks2000/tmdb-wrapper'
+import { MovieDiscoverResult, PageOption } from '@tdanks2000/tmdb-wrapper'
 
-// State
-const activeFilter = ref('All')
-const touchedCard = ref<number | null>(null)
-// const loading = ref(true)
-
-const filters = ref(['All', 'Popular', 'Trending', 'New', 'Top Rated', 'For You', 'Nearby'])
-const location = ref<any>(null)
-// Methods
-function setActiveFilter(filter: string) {
-  activeFilter.value = filter
+// ----------------------
+// Interfaces
+// ----------------------
+interface LocationData {
+  countryCode?: string
+  countryName?: string
+  stateProv?: string
+  city?: string
+  ipAddress?: string
 }
 
-function handleTouchStart(index: number) {
+// ----------------------
+// Constants
+// ----------------------
+const FILTERS = ['All', 'Popular', 'Trending', 'New', 'Top Rated', 'For You', 'Nearby']
+
+// ----------------------
+// State
+// ----------------------
+const activeFilter = ref<string>('All')
+const touchedCard = ref<number | null>(null)
+const currentPage = ref<number>(1)
+const location = ref<LocationData | null>(null)
+const locationError = ref<string | null>(null)
+
+// ----------------------
+// Handlers
+// ----------------------
+const setActiveFilter = (filter: string) => {
+  activeFilter.value = filter
+  currentPage.value = 1 // reset to first page on filter change
+}
+
+const handleTouchStart = (index: number) => {
   touchedCard.value = index
 }
 
-function handleTouchEnd(index: number) {
-  if (touchedCard.value === index) {
-    touchedCard.value = null
-  }
+const handleTouchEnd = (index: number) => {
+  if (touchedCard.value === index) touchedCard.value = null
 }
 
-// map filters to API calls
-const filterToApi: Record<string, () => Promise<MovieDiscoverResult>> = {
-  Popular: () => tmdb.movies.popular(),
-  Trending: () => tmdb.trending.trending('movie', 'day'),
-  New: () => tmdb.movies.nowPlaying(),
-  'Top Rated': () => tmdb.movies.topRated(),
-  'For You': () => tmdb.discover.movie({ with_genres: '18' }),
-  Nearby: () => tmdb.discover.movie({ region: location.value.countryCode }),
-  All: () => tmdb.discover.movie(),
+const handlePageChange = (pageNumber: number) => {
+  currentPage.value = pageNumber
 }
 
-// create a reactive api instance that uses the current filter
-let api = useApi<MovieDiscoverResult>(() => filterToApi[activeFilter.value]())
+// ----------------------
+// API Mapping (reactive to location)
+// ----------------------
+const filterToApi: Record<string, (options?: PageOption) => Promise<MovieDiscoverResult>> = {
+  All: (options) => tmdb.discover.movie(options),
+  Popular: (options) => tmdb.movies.popular(options),
+  Trending: (options) => tmdb.trending.trending('movie', 'day', options),
+  New: (options) => tmdb.movies.nowPlaying(options),
+  'Top Rated': (options) => tmdb.movies.topRated(options),
+  'For You': (options) => tmdb.discover.movie({ ...options, with_genres: '18' }),
+  Nearby: (options) => {
+    const region = location.value?.countryCode || 'US' // Fallback to US if location not available
+    return tmdb.discover.movie({ ...options, region })
+  },
+}
 
-// refetch when filter changes
-watch(activeFilter, () => {
-  // re-bind api to use the new filter
-  api = useApi<MovieDiscoverResult>(() => filterToApi[activeFilter.value]())
-  api.execute()
+// ----------------------
+// API Hook
+// ----------------------
+const api = useApi<MovieDiscoverResult>(() => {
+  return filterToApi[activeFilter.value]({ page: currentPage.value })
 })
 
-// initial fetch
+// ----------------------
+// Lifecycle & Watchers
+// ----------------------
+const stopWatch = watchEffect(() => {
+  if (activeFilter.value && currentPage.value) {
+    api.execute()
+  }
+})
+
 onMounted(async () => {
   try {
-    api.execute()
     const res = await fetch('https://api.db-ip.com/v2/free/self')
     if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
 
-    const data = await res.json()
-    location.value = data
-    console.log('loci:', data)
-  } catch (error) {
-    console.error('error:', error)
+    location.value = await res.json()
+    console.log('Location:', location.value)
+
+    if (activeFilter.value === 'Nearby') {
+      api.execute()
+    }
+  } catch (err) {
+    console.error('Failed to fetch location:', err)
+    locationError.value = 'Could not determine your location. Using default region.'
+    location.value = { countryCode: 'US' }
   }
 })
 
-console.log('recom: ', api.data)
+onUnmounted(() => {
+  stopWatch()
+})
 </script>
 
 <template>
-  <div id="">
-    <!-- <Header /> -->
-    <div class="container">
-      <!-- <SearchBar v-model="searchQuery" @search="handleSearch" /> -->
-      <FilterSection
-        :filters="filters"
-        :active-filter="activeFilter"
-        @filter-change="setActiveFilter"
-      />
-      <RecommendationList
-        :recommendations="api.data.value?.results"
-        @touch-start="handleTouchStart"
-        @touch-end="handleTouchEnd"
-      />
-    </div>
+  <div class="container">
+    <FilterSection
+      :filters="FILTERS"
+      :active-filter="activeFilter"
+      @filter-change="setActiveFilter"
+    />
+
+    <div v-if="locationError" class="location-warning">⚠️ {{ locationError }}</div>
+
+    <RecommendationList
+      :recommendations="api.data.value?.results"
+      :loading="api.loading?.value || false"
+      :error="api.error?.value || null"
+      @touch-start="handleTouchStart"
+      @touch-end="handleTouchEnd"
+    />
+
+    <PaginationBar
+      :current-page="currentPage"
+      :total-pages="api.data.value?.total_pages || 1"
+      @select-page="handlePageChange"
+    />
+
+    <div v-if="api.loading?.value" class="loading-overlay">Loading...</div>
   </div>
 </template>
+
+<style scoped>
+.location-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+</style>

@@ -24,7 +24,6 @@ const navItems = ref([
   { id: 'notifications', icon: 'fas fa-bell', label: 'Notifications', badgeCount: 3 },
 ])
 
-
 const settingsOptions = ref([
   { id: 1, icon: 'fas fa-user', label: 'Account Settings' },
   { id: 2, icon: 'fas fa-moon', label: 'Appearance' },
