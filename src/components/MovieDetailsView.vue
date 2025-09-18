@@ -29,9 +29,11 @@ defineProps<{ id: number | string }>()
 const auth = inject<AuthContext>('auth')
 
 // ---------------- State ----------------
-const selectedMovieDetails = ref<
-  AppendToResponse<MovieDetails, ['keywords', 'credits', 'videos'], 'movie'> | null
->(null)
+const selectedMovieDetails = ref<AppendToResponse<
+  MovieDetails,
+  ['keywords', 'credits', 'videos'],
+  'movie'
+> | null>(null)
 const similarMovies = ref<Movie[]>([])
 const movieId = ref<number | null>(null)
 const showTrailer = ref(false)
@@ -63,9 +65,7 @@ const trailer = computed(() => {
   return (
     videos.find(
       (video) =>
-        video.type === 'Trailer' &&
-        video.site === 'YouTube' &&
-        video.name.includes('Official'),
+        video.type === 'Trailer' && video.site === 'YouTube' && video.name.includes('Official'),
     ) ||
     videos.find((video) => video.type === 'Trailer' && video.site === 'YouTube') ||
     null
@@ -152,7 +152,11 @@ async function onToggleWatchList(id: number) {
       await supabase.from('watchlist').insert({ user_id: auth.user.value.id, movie_id })
       console.log('Movie added to watchlist')
     } else {
-      await supabase.from('watchlist').delete().eq('user_id', auth.user.value.id).eq('movie_id', movie_id)
+      await supabase
+        .from('watchlist')
+        .delete()
+        .eq('user_id', auth.user.value.id)
+        .eq('movie_id', movie_id)
       console.log('Movie removed from watchlist')
     }
   } catch (err: any) {
@@ -200,9 +204,17 @@ function handlePageChange(pageNumber: number) {
 
       <CastSection v-if="selectedMovieDetails && movieCredits.length" :cast="movieCredits" />
 
-      <SimilarMovie v-if="similarMovies.length" :movies="similarMovies" @movie-changed="loadMovie" />
+      <SimilarMovie
+        v-if="similarMovies.length"
+        :movies="similarMovies"
+        @movie-changed="loadMovie"
+      />
 
-      <PaginationBar :current-page="currentPage" :total-pages="totalPages" @select-page="handlePageChange" />
+      <PaginationBar
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @select-page="handlePageChange"
+      />
 
       <VideoIframe
         v-if="trailer"
