@@ -85,8 +85,8 @@ watch(auth.user, (newUser) => {
   display: flex;
   flex-direction: column;
   background-color: #0f172a;
-      color: white;
-      min-height: 100vh;
+  color: white;
+  min-height: 100vh;
 }
 
 .navbar {
