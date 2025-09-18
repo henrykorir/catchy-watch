@@ -6,18 +6,18 @@ interface ApiState<T> {
   error: Ref<string | null>
 }
 
-export function useApi<T>(
-  apiCall: () => Promise<T>,
-): ApiState<T> & { execute: () => Promise<void> } {
+export function useApi<T, P = any>(
+  apiCall: (params?: P) => Promise<T>,
+): ApiState<T> & { execute: (params?: P) => Promise<void> } {
   const data = ref<T | null>(null) as Ref<T | null>
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const execute = async () => {
+  const execute = async (params?: P) => {
     loading.value = true
     error.value = null
     try {
-      const result = await apiCall()
+      const result = await apiCall(params)
       data.value = result as T
     } catch (err: any) {
       error.value = err.message ?? 'Unknown error'

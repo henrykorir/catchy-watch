@@ -5,6 +5,9 @@ import MoviePoster from './movie/MoviePoster.vue'
 import MovieInfo from './movie/MovieInfo.vue'
 import CastSection from './movie/CastSection.vue'
 import SimilarMovie from './movie/SimilarMovie.vue'
+import VideoIframe from './widgets/VideoIframe.vue'
+import PaginationBar from './common/PaginationBar.vue'
+
 import {
   Movie,
   getFullImagePath,
@@ -13,35 +16,37 @@ import {
   SimilarMovies,
   MovieDetails,
   AppendToResponse,
+  PageOption,
 } from '@tdanks2000/tmdb-wrapper'
+
 import { useApi } from '../composables/useApi'
 import tmdb from '../lib/tmdb-auth'
-import VideoIframe from './widgets/VideoIframe.vue'
-import { AuthContext } from '../types/auth'
 import { supabase } from '../lib/supabase-auth'
+import { AuthContext } from '../types/auth'
 
-// ---------------- State ----------------
-const selectedMovieDetails = ref<AppendToResponse<
-  MovieDetails,
-  ['keywords', 'credits', 'videos'],
-  'movie'
-> | null>(null)
-const similarMovies = ref<Movie[]>([])
-const movieId = ref<number | null>()
-const show = ref(false)
-const isLoading = ref(false)
-const error = ref<string | null>(null)
-
+// ---------------- Props & Context ----------------
 defineProps<{ id: number | string }>()
 const auth = inject<AuthContext>('auth')
 
+// ---------------- State ----------------
+const selectedMovieDetails = ref<
+  AppendToResponse<MovieDetails, ['keywords', 'credits', 'videos'], 'movie'> | null
+>(null)
+const similarMovies = ref<Movie[]>([])
+const movieId = ref<number | null>(null)
+const showTrailer = ref(false)
+const isLoading = ref(false)
+const errorMessage = ref<string | null>(null)
+const currentPage = ref(1)
+const totalPages = ref(1)
+
 // ---------------- Utilities ----------------
-const updateMovieId = () => {
+function updateMovieId() {
   const id = Number(window.location.hash.replace('#/movie/', ''))
   movieId.value = isNaN(id) ? null : id
 }
 
-// ---------------- Computed Properties ----------------
+// ---------------- Computed ----------------
 const posterUrl = computed(() =>
   selectedMovieDetails.value?.poster_path
     ? getFullImagePath(
@@ -54,52 +59,45 @@ const posterUrl = computed(() =>
 )
 
 const trailer = computed(() => {
-  if (!selectedMovieDetails.value?.videos?.results) return null
-
-  const videos = selectedMovieDetails.value.videos.results
-
-  // Prefer "Official Trailer"
-  const officialTrailer = videos.find(
-    (video) =>
-      video.type === 'Trailer' && video.site === 'YouTube' && video.name.includes('Official'),
+  const videos = selectedMovieDetails.value?.videos?.results || []
+  return (
+    videos.find(
+      (video) =>
+        video.type === 'Trailer' &&
+        video.site === 'YouTube' &&
+        video.name.includes('Official'),
+    ) ||
+    videos.find((video) => video.type === 'Trailer' && video.site === 'YouTube') ||
+    null
   )
-
-  if (officialTrailer) return officialTrailer
-
-  // Fallback: any YouTube trailer
-  return videos.find((video) => video.type === 'Trailer' && video.site === 'YouTube') || null
 })
 
-// Simplified computed for template usage
 const movieCredits = computed(() => selectedMovieDetails.value?.credits?.cast || [])
 const movieKeywords = computed(() => selectedMovieDetails.value?.keywords?.keywords || [])
 
-// ---------------- API Calls ----------------
-const { execute: fetchSimilar } = useApi<SimilarMovies>(async () => {
+// ---------------- API ----------------
+const { execute: fetchSimilar } = useApi<SimilarMovies>(async (options?: PageOption) => {
   if (!movieId.value) return { page: 0, results: [], total_pages: 0, total_results: 0 }
-  const data = await tmdb.movies.similar(movieId.value)
+
+  const data = await tmdb.movies.similar(movieId.value, options)
   similarMovies.value = data.results || []
+  totalPages.value = data.total_pages
   return data
 })
 
-// ---------------- Data Fetching ----------------
-const fetchMovieData = async (id: number) => {
+async function fetchMovieData(id: number) {
   isLoading.value = true
-  error.value = null
+  errorMessage.value = null
 
   try {
-    // Fetch main details with all required data in a single call
     const [movieData] = await Promise.all([
-      tmdb.movies.details(id, ['keywords', 'credits', 'videos'] as const),
+      tmdb.movies.details(id, ['keywords', 'credits', 'videos']),
       fetchSimilar(),
     ])
-
     selectedMovieDetails.value = movieData
-
-    console.log('Movie details with appended data:', selectedMovieDetails.value)
   } catch (err) {
-    error.value = 'Failed to load movie data'
     console.error('Error fetching movie data:', err)
+    errorMessage.value = 'Failed to load movie data'
     selectedMovieDetails.value = null
     similarMovies.value = []
   } finally {
@@ -111,9 +109,8 @@ const fetchMovieData = async (id: number) => {
 watch(
   movieId,
   (id) => {
-    if (id) {
-      fetchMovieData(id)
-    } else {
+    if (id) fetchMovieData(id)
+    else {
       selectedMovieDetails.value = null
       similarMovies.value = []
     }
@@ -126,25 +123,23 @@ onMounted(() => {
   updateMovieId()
   window.addEventListener('hashchange', updateMovieId)
 })
-
 onUnmounted(() => {
   window.removeEventListener('hashchange', updateMovieId)
 })
 
 // ---------------- Methods ----------------
-const loadMovie = async (id: number | string) => {
+function loadMovie(id: number | string) {
   window.location.hash = `/movie/${id}`
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-const onToggleWatchList = async (id: number) => {
+async function onToggleWatchList(id: number) {
   if (!auth) throw new Error('Auth context not found')
 
   const movie_id = id || selectedMovieDetails.value?.id
   if (!movie_id) return
 
   try {
-    // Check if the movie is already in the user's watchlist
     const { data, error } = await supabase
       .from('watchlist')
       .select('*', { count: 'exact' })
@@ -154,19 +149,10 @@ const onToggleWatchList = async (id: number) => {
     if (error) throw error
 
     if (data?.length === 0) {
-      // Insert if not exists
-      await supabase.from('watchlist').insert({
-        user_id: auth.user.value.id,
-        movie_id: movie_id,
-      })
+      await supabase.from('watchlist').insert({ user_id: auth.user.value.id, movie_id })
       console.log('Movie added to watchlist')
     } else {
-      // Remove if exists (toggle behavior)
-      await supabase
-        .from('watchlist')
-        .delete()
-        .eq('user_id', auth.user.value.id)
-        .eq('movie_id', movie_id)
+      await supabase.from('watchlist').delete().eq('user_id', auth.user.value.id).eq('movie_id', movie_id)
       console.log('Movie removed from watchlist')
     }
   } catch (err: any) {
@@ -174,34 +160,33 @@ const onToggleWatchList = async (id: number) => {
   }
 }
 
-const onPlayTrailer = () => {
-  if (trailer.value) {
-    show.value = true
-  } else {
-    alert('No trailer available for this movie')
-  }
+function onPlayTrailer() {
+  if (trailer.value) showTrailer.value = true
+  else alert('No trailer available for this movie')
 }
 
-const onCloseVideo = () => {
-  show.value = false
+function onCloseVideo() {
+  showTrailer.value = false
+}
+
+function handlePageChange(pageNumber: number) {
+  currentPage.value = pageNumber
+  fetchSimilar({ page: pageNumber })
 }
 </script>
 
 <template>
   <div class="container">
     <main>
-      <!-- Loading State -->
+      <!-- Loading -->
       <div v-if="isLoading" class="loading">Loading movie details...</div>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="error">
-        {{ error }}
-      </div>
+      <!-- Error -->
+      <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
 
       <!-- Content -->
       <div v-else-if="selectedMovieDetails" class="movie-content">
         <MoviePoster :posterUrl="posterUrl" :title="selectedMovieDetails.title" />
-
         <MovieInfo
           :movie="selectedMovieDetails"
           :tags="movieKeywords"
@@ -210,22 +195,20 @@ const onCloseVideo = () => {
         />
       </div>
 
-      <!-- No Data State -->
+      <!-- No Data -->
       <div v-else class="no-data">No movie data available</div>
 
-      <CastSection v-if="selectedMovieDetails && movieCredits.length > 0" :cast="movieCredits" />
+      <CastSection v-if="selectedMovieDetails && movieCredits.length" :cast="movieCredits" />
 
-      <SimilarMovie
-        v-if="similarMovies.length > 0"
-        :movies="similarMovies"
-        @movie-changed="loadMovie"
-      />
+      <SimilarMovie v-if="similarMovies.length" :movies="similarMovies" @movie-changed="loadMovie" />
+
+      <PaginationBar :current-page="currentPage" :total-pages="totalPages" @select-page="handlePageChange" />
 
       <VideoIframe
         v-if="trailer"
         :videoId="trailer.key"
-        :show="show"
-        :title="selectedMovieDetails?.title + ' Trailer'"
+        :show="showTrailer"
+        :title="`${selectedMovieDetails?.title} Trailer`"
         @close="onCloseVideo"
       />
     </main>
@@ -238,7 +221,6 @@ const onCloseVideo = () => {
   gap: 2rem;
   margin-bottom: 2rem;
 }
-
 .loading,
 .error,
 .no-data {
@@ -246,11 +228,9 @@ const onCloseVideo = () => {
   padding: 2rem;
   font-size: 1.2rem;
 }
-
 .error {
   color: #ff4444;
 }
-
 @media (max-width: 900px) {
   .movie-content {
     flex-direction: column;
